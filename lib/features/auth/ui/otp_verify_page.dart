@@ -136,13 +136,13 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
     });
 
     try {
+      // ✅ التحقق من صحة رقم OTP من السيرفر
+      // التوكن يتم حفظه تلقائيًا داخل verifyOtp
+      await _repo.verifyOtp(widget.phone, otp, widget.countryId);
+
       if (!mounted) return;
 
-     // final token = result.token;
-    //  if (token.isNotEmpty) {
-    //    await DioClient.tokenStorage.saveToken(token);
-    //  }
-
+      // الآن ننتقل إلى الصفحة الرئيسية
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const AppShell()),
@@ -152,7 +152,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
       final msg = _humanizeOtpError(e);
       setState(() => _error = msg);
 
-      if (msg.contains('Verification code')) {
+      if (msg.contains('incorrect') || msg.contains('expired')) {
         _clearOtpAndFocusFirst();
       }
     } finally {
