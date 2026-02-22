@@ -112,7 +112,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                     // App name
                     const Text(
-                      'Himma',
+                      'Top Max',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w800,
@@ -124,7 +124,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                     // Tagline
                     const Text(
-                      'Find Your Perfect Match',
+                      'Find Your Next Career',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
