@@ -14,64 +14,75 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // خلفية بيضاء لكل الصفحة
-          const Positioned.fill(
-            child: ColoredBox(color: Colors.white),
-          ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final screenWidth = constraints.maxWidth;
+          final screenHeight = constraints.maxHeight;
 
-          // Gradient فقط في الجزء العلوي
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 500, // عدّلها حسب الفيجما (220-320)
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color.fromARGB(255, 197, 217, 255),
-                    Color.fromARGB(255, 255, 255, 255),
-                  ],
+          // Responsive gradient height (20-40% of screen height)
+          final gradientHeight = (screenHeight * 0.35).clamp(220.0, 500.0);
+
+          return Stack(
+            children: [
+              // White background
+              const Positioned.fill(
+                child: ColoredBox(color: Colors.white),
+              ),
+
+              // Responsive gradient at top
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: gradientHeight,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color.fromARGB(255, 197, 217, 255),
+                        Color.fromARGB(255, 255, 255, 255),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
 
-          // محتوى الصفحة (يبقى مثل ما هو)
-          SafeArea(
-            child: BlocBuilder<HomeBloc, HomeState>(
-              builder: (context, state) {
-                if (state is HomeLoading || state is HomeInitial) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+              // Content
+              SafeArea(
+                child: BlocBuilder<HomeBloc, HomeState>(
+                  builder: (context, state) {
+                    if (state is HomeLoading || state is HomeInitial) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                if (state is HomeError) {
-                  return _ErrorView(
-                    message: state.message,
-                    onRetry: () =>
-                        context.read<HomeBloc>().add(const HomeLoadRequested()),
-                  );
-                }
+                    if (state is HomeError) {
+                      return _ErrorView(
+                        message: state.message,
+                        onRetry: () =>
+                            context.read<HomeBloc>().add(const HomeLoadRequested()),
+                      );
+                    }
 
-                if (state is HomeLoaded) {
-                  return _HomeContent(
-                    data: state.homeData,
-                    onTapSearch: onTapSearch,
-                    onRefresh: () async {
-                      context.read<HomeBloc>().add(const HomeRefreshRequested());
-                    },
-                  );
-                }
+                    if (state is HomeLoaded) {
+                      return _HomeContent(
+                        data: state.homeData,
+                        onTapSearch: onTapSearch,
+                        screenWidth: screenWidth,
+                        onRefresh: () async {
+                          context.read<HomeBloc>().add(const HomeRefreshRequested());
+                        },
+                      );
+                    }
 
-                return const SizedBox.shrink();
-              },
-            ),
-          ),
-        ],
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -84,20 +95,24 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final errorImageHeight = (screenWidth * 0.65).clamp(200.0, 280.0);
+
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.085, // ~32px on 375px
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Error illustration
             Image.asset(
               'lib/app/assets/images/Frame 427319163.png',
-              height: 260,
+              height: errorImageHeight,
               fit: BoxFit.contain,
               errorBuilder: (_, __, ___) => Icon(
                 Icons.error_outline,
-                size: 64,
+                size: screenWidth * 0.17, // ~64px on 375px
                 color: Theme.of(context).colorScheme.error,
               ),
             ),
@@ -150,11 +165,13 @@ class _ErrorView extends StatelessWidget {
 class _HomeContent extends StatelessWidget {
   final HomeModel data;
   final VoidCallback onTapSearch;
+  final double screenWidth;
   final Future<void> Function() onRefresh;
 
   const _HomeContent({
     required this.data,
     required this.onTapSearch,
+    required this.screenWidth,
     required this.onRefresh,
   });
 
@@ -164,18 +181,20 @@ class _HomeContent extends StatelessWidget {
       onRefresh: onRefresh,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-
-        // ✅ التعديل الوحيد: بدل Padding ثابت على كل الصفحة
-        // قسمناها: فوق (TopBar + Title + Search) ثم كارد أبيض بزوايا علوية تحت السيرش.
         child: Column(
           children: [
-            // ===== الجزء العلوي (نفسه قبل) =====
+            // Top section with padding
             Padding(
-              padding: const EdgeInsets.fromLTRB(18, 14, 18, 0),
+              padding: EdgeInsets.fromLTRB(
+                screenWidth * 0.048, // ~18px
+                14,
+                screenWidth * 0.048,
+                0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const _TopBar(),
+                  _TopBar(screenWidth: screenWidth),
                   const SizedBox(height: 16),
                   const _HeroTitle(),
                   const SizedBox(height: 16),
@@ -186,7 +205,7 @@ class _HomeContent extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // ===== الكارد الأبيض اللي عليه انحناءات مثل صفحة Search =====
+            // White card with rounded top
             Container(
               width: double.infinity,
               decoration: const BoxDecoration(
@@ -196,11 +215,16 @@ class _HomeContent extends StatelessWidget {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(18, 22, 18, 24),
+                padding: EdgeInsets.fromLTRB(
+                  screenWidth * 0.048,
+                  22,
+                  screenWidth * 0.048,
+                  24,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ===== Jobs for Special Abilities =====
+                    // Jobs for Special Abilities
                     if (data.disabilityJobs.isNotEmpty) ...[
                       const _SectionHeader(title: 'Jobs for Special Abilities'),
                       const SizedBox(height: 12),
@@ -208,7 +232,7 @@ class _HomeContent extends StatelessWidget {
                       const SizedBox(height: 14),
                       _HorizontalCards<JobModel>(
                         height: 348,
-                        cardWidth: 400,
+                        screenWidth: screenWidth,
                         items: data.disabilityJobs.take(8).toList(),
                         cardBuilder: (ctx, job, index) =>
                             _SpecialJobCard(job: job, index: index),
@@ -216,13 +240,13 @@ class _HomeContent extends StatelessWidget {
                       const SizedBox(height: 28),
                     ],
 
-                    // ===== Featured Jobs =====
+                    // Featured Jobs
                     if (data.featuredJobs.isNotEmpty) ...[
                       const _SectionHeader(title: 'Featured Jobs'),
                       const SizedBox(height: 14),
                       _HorizontalCards<JobModel>(
                         height: 348,
-                        cardWidth: 400,
+                        screenWidth: screenWidth,
                         items: data.featuredJobs.take(8).toList(),
                         cardBuilder: (ctx, job, index) =>
                             _FeaturedJobCard(job: job, index: index),
@@ -230,13 +254,13 @@ class _HomeContent extends StatelessWidget {
                       const SizedBox(height: 28),
                     ],
 
-                    // ===== Courses for You =====
+                    // Courses for You
                     if (data.coursesForYou.isNotEmpty) ...[
                       const _SectionHeader(title: 'Courses for You'),
                       const SizedBox(height: 14),
                       _HorizontalCards<CourseModel>(
                         height: 220,
-                        cardWidth: 280,
+                        screenWidth: screenWidth,
                         items: data.coursesForYou,
                         cardBuilder: (ctx, course, index) =>
                             _CourseCard(course: course),
@@ -244,7 +268,7 @@ class _HomeContent extends StatelessWidget {
                       const SizedBox(height: 28),
                     ],
 
-                    // ===== Recent Openings =====
+                    // Recent Openings
                     if (data.recentOpenings.isNotEmpty) ...[
                       const _SectionHeader(title: 'Recent Openings'),
                       const SizedBox(height: 12),
@@ -277,15 +301,20 @@ class _HomeContent extends StatelessWidget {
 /* ===================== UI PARTS ===================== */
 
 class _TopBar extends StatelessWidget {
-  const _TopBar();
+  final double screenWidth;
+  const _TopBar({required this.screenWidth});
 
   @override
   Widget build(BuildContext context) {
+    // Responsive logo size
+    final logoSize = (screenWidth * 0.16).clamp(54.0, 70.0);
+    final notificationSize = (screenWidth * 0.117).clamp(40.0, 48.0);
+
     return Row(
       children: [
         Container(
-          width: 60,
-          height: 60,
+          width: logoSize,
+          height: logoSize,
           decoration: BoxDecoration(
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(14),
@@ -301,14 +330,14 @@ class _TopBar extends StatelessWidget {
           child: Image.asset(
             'lib/app/assets/images/Rec.png',
             fit: BoxFit.contain,
-            width: 70,
-            height: 70,
+            width: logoSize + 10,
+            height: logoSize + 10,
           ),
         ),
         const Spacer(),
         Container(
-          width: 44,
-          height: 44,
+          width: notificationSize,
+          height: notificationSize,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(50),
@@ -503,19 +532,22 @@ class _ChipsRow extends StatelessWidget {
 class _HorizontalCards<T> extends StatelessWidget {
   final List<T> items;
   final double height;
-  final double cardWidth;
+  final double screenWidth;
   final Widget Function(BuildContext, T, int) cardBuilder;
 
   const _HorizontalCards({
     super.key,
     required this.items,
     required this.cardBuilder,
+    required this.screenWidth,
     this.height = 348,
-    this.cardWidth = 400,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Responsive card width: 85-95% of screen width, clamped
+    final cardWidth = (screenWidth * 0.9).clamp(280.0, 420.0);
+
     return SizedBox(
       height: height,
       child: ListView.separated(
@@ -903,10 +935,8 @@ class _FeaturedJobCard extends StatelessWidget {
                     Expanded(
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Colors.white,
-                         // borderRadius: BorderRadius.circular(20),
-                     //     border: Border.all(color: borderColor, width: 1.2),
                         ),
                         child: Text(
                           job.salaryDisplayForUi,

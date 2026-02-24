@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -39,7 +42,6 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
   int _resendSecondsLeft = 0;
   Timer? _timer;
 
-  // ✅ Assets paths (لازم تكون موجودة بالمسار نفسه)
   static const String _illustrationAsset =
       'lib/app/assets/images/illustration.png';
   static const String _otpBubbleAsset = 'lib/app/assets/images/otp_bubble.svg';
@@ -96,20 +98,22 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
     final raw = AuthRepo.friendlyDioError(e);
     final lower = raw.toLowerCase();
 
+    // Check for connectivity issues first
+    if (e is SocketException ||
+        lower.contains('socket') ||
+        lower.contains('timeout') ||
+        lower.contains('network') ||
+        lower.contains('connection') ||
+        lower.contains('failed host lookup')) {
+      return 'Unable to connect. Please check your internet connection and try again.';
+    }
+
     // OTP invalid/expired / 422
     if (lower.contains('422') ||
         lower.contains('invalid') ||
         lower.contains('expired') ||
         lower.contains('otp')) {
       return 'The verification code is incorrect or has expired.';
-    }
-
-    // Network/timeout
-    if (lower.contains('socket') ||
-        lower.contains('timeout') ||
-        lower.contains('network') ||
-        lower.contains('connection')) {
-      return 'Unable to connect. Please check your internet connection and try again.';
     }
 
     return 'An unexpected error occurred. Please try again.';
@@ -136,22 +140,36 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
     });
 
     try {
-      // ✅ التحقق من صحة رقم OTP من السيرفر
-      // التوكن يتم حفظه تلقائيًا داخل verifyOtp
+      // Check internet connectivity first
+      final connectivityResults = await Connectivity().checkConnectivity();
+      final hasConnection = connectivityResults.any((result) => result != ConnectivityResult.none);
+
+      if (!hasConnection) {
+        setState(() => _error = 'No internet connection. Please check your connection and try again.');
+        return;
+      }
+
       await _repo.verifyOtp(widget.phone, otp, widget.countryId);
 
       if (!mounted) return;
 
-      // الآن ننتقل إلى الصفحة الرئيسية
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const AppShell()),
         (_) => false,
       );
+    } on SocketException catch (_) {
+      setState(() => _error = 'Unable to connect. Please check your internet connection and try again.');
+      _clearOtpAndFocusFirst();
+    } on DioException catch (e) {
+      final msg = _humanizeOtpError(e);
+      setState(() => _error = msg);
+      if (msg.contains('incorrect') || msg.contains('expired')) {
+        _clearOtpAndFocusFirst();
+      }
     } catch (e) {
       final msg = _humanizeOtpError(e);
       setState(() => _error = msg);
-
       if (msg.contains('incorrect') || msg.contains('expired')) {
         _clearOtpAndFocusFirst();
       }
@@ -169,6 +187,15 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
     });
 
     try {
+      // Check internet connectivity first
+      final connectivityResults = await Connectivity().checkConnectivity();
+      final hasConnection = connectivityResults.any((result) => result != ConnectivityResult.none);
+
+      if (!hasConnection) {
+        setState(() => _error = 'No internet connection. Please check your connection and try again.');
+        return;
+      }
+
       await _repo.resendOtp(widget.phone, widget.countryId);
       if (!mounted) return;
 
@@ -176,6 +203,12 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
         const SnackBar(content: Text('The code has been sent again.')),
       );
       _startResendCooldown(30);
+    } on SocketException catch (_) {
+      setState(() => _error = 'Unable to connect. Please check your internet connection and try again.');
+      _startResendCooldown(60);
+    } on DioException catch (e) {
+      setState(() => _error = _humanizeOtpError(e));
+      _startResendCooldown(60);
     } catch (e) {
       setState(() => _error = _humanizeOtpError(e));
       _startResendCooldown(60);
@@ -203,12 +236,12 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
     setState(() {});
   }
 
-  Widget _otpCircleField(int i) {
+  Widget _otpCircleField(int i, double size) {
     final filled = _controllers[i].text.trim().isNotEmpty;
 
     return Container(
-      width: 48,
-      height: 48,
+      width: size,
+      height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
@@ -226,10 +259,10 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         textInputAction:
             i == _otpLength - 1 ? TextInputAction.done : TextInputAction.next,
-        style: const TextStyle(
-          fontSize: 20,
+        style: TextStyle(
+          fontSize: size * 0.42,
           fontWeight: FontWeight.w800,
-          color: Color(0xFF2F6FDB),
+          color: const Color(0xFF2F6FDB),
         ),
         decoration: const InputDecoration(
           counterText: '',
@@ -248,7 +281,6 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
 
           final v = value.replaceAll(RegExp(r'[^0-9]'), '');
 
-          // مسح الرقم -> رجوع للخانة السابقة
           if (v.isEmpty) {
             _controllers[i].text = '';
             if (i > 0) {
@@ -275,196 +307,218 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
     );
   }
 
-  /// ✅ Illustration with OTP bubble over it (مثل الفيجما)
-  Widget _buildIllustrationWithBubble() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: SizedBox(
-        height: 550,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final w = constraints.maxWidth;
-            final h = constraints.maxHeight;
-
-            return Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Positioned.fill(
-  child: Align(
-    alignment: const Alignment(0, 0.55), 
-    child: Transform.scale(
-      scale: 1.20, 
-      child: Image.asset(
-        _illustrationAsset,
-        fit: BoxFit.contain,
-      ),
-    ),
-  ),
-),
-
-
-                // OTP Bubble (SVG)
-                Positioned(
-                  left: w * 0.64,
-                  top: h * 0.29,
-                  child: SvgPicture.asset(
-                    _otpBubbleAsset,
-                    width: w * 0.18,
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F7FB),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 1),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final screenHeight = constraints.maxHeight;
+            final screenWidth = constraints.maxWidth;
 
-              // ===== Illustration + Bubble =====
-              _buildIllustrationWithBubble(),
+            // Calculate all dimensions at the top level to avoid nested LayoutBuilders
+            final illustrationHeight = (screenHeight * 0.55).clamp(320.0, 550.0);
+            final horizontalPadding = screenWidth * 0.048;
+            final cardInnerPadding = 40.0; // 20 left + 20 right padding inside card
+            final cardWidth = screenWidth - (horizontalPadding * 2);
+            final otpCirclesAvailableWidth = cardWidth - cardInnerPadding;
 
-              const SizedBox(height: 1),
+            // Calculate OTP circle size with conservative gap
+            const gap = 8.0; // Reduced from 10 to prevent overflow
+            final totalGaps = gap * (_otpLength - 1);
+            final calculatedCircleSize = (otpCirclesAvailableWidth - totalGaps - 4) / _otpLength; // Extra 4px safety margin
+            final circleSize = calculatedCircleSize.clamp(40.0, 54.0); // Reduced max from 58 to 54
 
-              // ===== Card =====
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18),
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(34),
-                    boxShadow: const [
-                      BoxShadow(
-                        blurRadius: 20,
-                        offset: Offset(0, 10),
-                        color: Color(0x14000000),
-                      )
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 20),
-                        const Text(
-                          'Verify Your Phone Number',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          'Enter the verification code sent to your phone\nnumber ending in ***${_phoneEnding()}',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 14.5,
-                            height: 1.4,
-                            color: Color(0xFF6B7280),
-                          ),
-                        ),
-                        const SizedBox(height: 22),
+            return SingleChildScrollView(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: screenHeight,
+                ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 1),
 
-                        // ===== OTP circles =====
-                        SizedBox(
-                          height: 60,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: List.generate(
-                                _otpLength, (i) => _otpCircleField(i)),
-                          ),
-                        ),
-
-                        if (_error != null) ...[
-                          const SizedBox(height: 12),
-                          Text(
-                            _error!,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.red,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-
-                        const SizedBox(height: 18),
-
-                        // ===== Verify button =====
-                        SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: ElevatedButton(
-                            onPressed: _canVerify ? _verify : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2F6FDB),
-                              disabledBackgroundColor:
-                                  const Color(0xFF2F6FDB).withOpacity(0.35),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(28),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: _loading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor:
-                                          AlwaysStoppedAnimation<Color>(
-                                              Colors.white),
-                                    ),
-                                  )
-                                : const Text(
-                                    'Verify',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white,
+                      // ===== Illustration + Bubble =====
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: SizedBox(
+                          height: illustrationHeight,
+                          width: screenWidth - 48,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Positioned.fill(
+                                child: Align(
+                                  alignment: const Alignment(0, 0.55),
+                                  child: Transform.scale(
+                                    scale: 1.20,
+                                    child: Image.asset(
+                                      _illustrationAsset,
+                                      fit: BoxFit.contain,
                                     ),
                                   ),
+                                ),
+                              ),
+
+                              // OTP Bubble (SVG) - positioned responsively
+                              Positioned(
+                                left: (screenWidth - 48) * 0.64,
+                                top: illustrationHeight * 0.29,
+                                child: SvgPicture.asset(
+                                  _otpBubbleAsset,
+                                  width: (screenWidth - 48) * 0.18,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
+                      ),
 
-                        const SizedBox(height: 14),
+                      const SizedBox(height: 1),
 
-                        // ===== Resend =====
-                        TextButton(
-                          onPressed: (_loading || _resendSecondsLeft > 0)
-                              ? null
-                              : _resend,
-                          child: Text(
-                            _resendSecondsLeft > 0
-                                ? 'Resend in $_resendSecondsLeft s'
-                                : "Didn't receive a code?",
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              decoration: TextDecoration.underline,
-                              color: Color(0xFF111827),
+                      // ===== Card =====
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(34),
+                            boxShadow: const [
+                              BoxShadow(
+                                blurRadius: 20,
+                                offset: Offset(0, 10),
+                                color: Color(0x14000000),
+                              )
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const SizedBox(height: 20),
+                                const Text(
+                                  'Verify Your Phone Number',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  'Enter the verification code sent to your phone\nnumber ending in ***${_phoneEnding()}',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 14.5,
+                                    height: 1.4,
+                                    color: Color(0xFF6B7280),
+                                  ),
+                                ),
+                                const SizedBox(height: 22),
+
+                                // ===== OTP circles - using pre-calculated size =====
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(_otpLength, (i) {
+                                    return Padding(
+                                      padding: EdgeInsets.only(
+                                        right: i == _otpLength - 1 ? 0 : gap,
+                                      ),
+                                      child: _otpCircleField(i, circleSize),
+                                    );
+                                  }),
+                                ),
+
+                                if (_error != null) ...[
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    _error!,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+
+                                const SizedBox(height: 18),
+
+                                // ===== Verify button =====
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 52,
+                                  child: ElevatedButton(
+                                    onPressed: _canVerify ? _verify : null,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF2F6FDB),
+                                      disabledBackgroundColor:
+                                          const Color(0xFF2F6FDB).withValues(alpha: 0.35),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(28),
+                                      ),
+                                      elevation: 0,
+                                    ),
+                                    child: _loading
+                                        ? const SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                      Colors.white),
+                                            ),
+                                          )
+                                        : const Text(
+                                            'Verify',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                  ),
+                                ),
+
+                                const SizedBox(height: 14),
+
+                                // ===== Resend =====
+                                TextButton(
+                                  onPressed: (_loading || _resendSecondsLeft > 0)
+                                      ? null
+                                      : _resend,
+                                  child: Text(
+                                    _resendSecondsLeft > 0
+                                        ? 'Resend in $_resendSecondsLeft s'
+                                        : "Didn't receive a code?",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      decoration: TextDecoration.underline,
+                                      color: Color(0xFF111827),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+
+                      const SizedBox(height: 18),
+                    ],
                   ),
                 ),
               ),
-
-              const SizedBox(height: 18),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

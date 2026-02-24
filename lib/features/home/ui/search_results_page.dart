@@ -170,8 +170,8 @@ class _SearchResultsViewState extends State<_SearchResultsView> {
               children: [
                 const SizedBox(height: 16),
 
-                // Search Bar
-                _buildSearchBar(),
+                // Search Bar with back button
+                _buildSearchBar(context),
 
                 const SizedBox(height: 16),
 
@@ -233,12 +233,12 @@ class _SearchResultsViewState extends State<_SearchResultsView> {
           ),
         ],
       ),
-      // Bottom Navigation
+      // Bottom Navigation - matching AppShell design
       bottomNavigationBar: _buildBottomNav(context),
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -256,10 +256,17 @@ class _SearchResultsViewState extends State<_SearchResultsView> {
         ),
         child: Row(
           children: [
-            const Icon(Icons.search, color: Color(0xFF6B7280), size: 20),
+            // Back button
+            GestureDetector(
+              onTap: () {
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                }
+              },
+              child: const Icon(Icons.arrow_back, color: Color(0xFF6B7280), size: 20),
+            ),
             const SizedBox(width: 12),
 
-            // لو بدك تعرض keyword بدل النص الثابت، غيرها لاحقًا
             const Expanded(
               child: Text(
                 'Ui Ux Design',
@@ -273,7 +280,7 @@ class _SearchResultsViewState extends State<_SearchResultsView> {
 
             const SizedBox(width: 12),
 
-            // ✅ نفس PopupMenuButton الموجود في SearchPage
+            // Search mode selector
             PopupMenuButton<SearchMode>(
               color: Colors.white,
               initialValue: _searchMode,
@@ -354,78 +361,129 @@ class _SearchResultsViewState extends State<_SearchResultsView> {
   }
 
   Widget _buildBottomNav(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x0D000000),
-            offset: Offset(0, -2),
-            blurRadius: 8,
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: SafeArea(
-        top: false,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _NavItem(
-              icon: Icons.home_outlined,
-              label: 'Home',
-              isActive: false,
-              onTap: () => Navigator.pop(context),
-            ),
-            _NavItem(
-              icon: Icons.search,
-              label: 'Explore',
-              isActive: true,
-              onTap: () {},
-            ),
-            GestureDetector(
-              onTap: () {},
-              child: Container(
-                width: 80,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF3B82F6),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.add_circle, color: Colors.white, size: 22),
-                    SizedBox(height: 2),
-                    Text(
-                      'Post Job',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
+
+        // Responsive nav item width (matching AppShell)
+        final navItemWidth = (screenWidth * 0.16).clamp(54.0, 70.0);
+
+        // Responsive center button size (matching AppShell)
+        final centerButtonWidth = (screenWidth * 0.235).clamp(80.0, 98.0);
+        final centerButtonHeight = (navItemWidth * 0.93).clamp(50.0, 60.0);
+
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            border: Border(
+              top: BorderSide(
+                color: Color(0xFFCAC9C9),
+                width: 1,
               ),
             ),
-            _NavItem(
-              icon: Icons.person_outline,
-              label: 'Profile',
-              isActive: false,
-              onTap: () {},
+            boxShadow: [
+              BoxShadow(
+                color: Color(0x0D000000),
+                offset: Offset(0, -2),
+                blurRadius: 8,
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: SafeArea(
+            top: false,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _NavItem(
+                  icon: Icons.home_outlined,
+                  activeIcon: Icons.home,
+                  label: 'Home',
+                  isSelected: false,
+                  onTap: () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  width: navItemWidth,
+                ),
+                _NavItem(
+                  icon: Icons.search,
+                  activeIcon: Icons.search,
+                  label: 'Explore',
+                  isSelected: true,
+                  onTap: () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  width: navItemWidth,
+                ),
+                // Post Job - center button (matching AppShell)
+                GestureDetector(
+                  onTap: () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: Container(
+                    width: centerButtonWidth,
+                    height: centerButtonHeight,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2B9FDB), // Fixed: was 0xFF3B82F6
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add_circle,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Post Job',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                _NavItem(
+                  icon: Icons.person_outline,
+                  activeIcon: Icons.person,
+                  label: 'Profile',
+                  isSelected: false,
+                  onTap: () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  width: navItemWidth,
+                ),
+                _NavItemWithCircle(
+                  label: 'More',
+                  isSelected: false,
+                  onTap: () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  width: navItemWidth,
+                ),
+              ],
             ),
-            _NavItem(
-              icon: Icons.more_horiz,
-              label: 'More',
-              isActive: false,
-              onTap: () {},
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
+
 }
 
 /// Filter chip widget
@@ -634,37 +692,46 @@ class _Pill extends StatelessWidget {
   }
 }
 
+// Navigation item widget matching AppShell design
 class _NavItem extends StatelessWidget {
   final IconData icon;
+  final IconData activeIcon;
   final String label;
-  final bool isActive;
+  final bool isSelected;
   final VoidCallback onTap;
+  final double width;
 
   const _NavItem({
     required this.icon,
+    required this.activeIcon,
     required this.label,
-    required this.isActive,
+    required this.isSelected,
     required this.onTap,
+    required this.width,
   });
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? const Color(0xFF3B82F6) : const Color(0xFF9CA3AF);
+    final color = isSelected ? const Color(0xFF2B9FDB) : const Color(0xFF8F959E);
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
-        width: 60,
+        width: width,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: color, size: 24),
-            const SizedBox(height: 4),
+            Icon(
+              isSelected ? activeIcon : icon,
+              color: color,
+              size: 26,
+            ),
+            const SizedBox(height: 6),
             Text(
               label,
               style: TextStyle(
-                fontSize: 11,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                 color: color,
               ),
             ),
@@ -674,3 +741,88 @@ class _NavItem extends StatelessWidget {
     );
   }
 }
+
+// Custom widget for More button with circle and dots (matching AppShell)
+class _NavItemWithCircle extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final double width;
+
+  const _NavItemWithCircle({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+    required this.width,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isSelected ? const Color(0xFF2B9FDB) : const Color(0xFF8F959E);
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
+        width: width,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Circle with 3 dots inside
+            Container(
+              width: 26,
+              height: 26,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: color,
+                  width: 2,
+                ),
+              ),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _Dot(color: color),
+                    const SizedBox(width: 2),
+                    _Dot(color: color),
+                    const SizedBox(width: 2),
+                    _Dot(color: color),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Small dot widget for More button
+class _Dot extends StatelessWidget {
+  final Color color;
+  const _Dot({required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 3,
+      height: 3,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+}
+

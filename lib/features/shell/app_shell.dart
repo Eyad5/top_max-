@@ -39,9 +39,8 @@ class _AppShellState extends State<AppShell> {
       _index = newIndex;
     });
 
-    // Refresh SavedItems when navigating to it (with small delay to ensure API calls finish)
+    // Refresh SavedItems when navigating to it
     if (newIndex == 3 && _previousIndex != 3) {
-      // Add small delay to ensure any pending save/unsave API calls complete
       Future.delayed(const Duration(milliseconds: 300), () {
         _savedItemsKey.currentState?.refresh();
       });
@@ -68,90 +67,106 @@ class _AppShellState extends State<AppShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(index: _index, children: _tabs),
-      bottomNavigationBar: Container(
-  decoration: const BoxDecoration(
-    color: Colors.white,
-    border: Border(
-      top: BorderSide(
-        color: Color(0xFFCAC9C9), // نفس اللي ظاهر بالفيمجا
-        width: 1,
-      ),
-    ),
-    boxShadow: [
-      BoxShadow(
-        color: Color(0x0D000000),
+      bottomNavigationBar: LayoutBuilder(
+        builder: (context, constraints) {
+          final screenWidth = constraints.maxWidth;
 
-              offset: Offset(0, -2),
-              blurRadius: 8,
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: SafeArea(
-          top: false,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _NavItem(
-                icon: Icons.home_outlined,
-                activeIcon: Icons.home,
-                label: 'Home',
-                isSelected: _index == 0,
-                onTap: () => _onTabChanged(0),
-              ),
-              _NavItem(
-                icon: Icons.search,
-                activeIcon: Icons.search,
-                label: 'Explore',
-                isSelected: _index == 1,
-                onTap: () => _onTabChanged(1),
-              ),
-              // Post Job - center button exactly like Figma
-              GestureDetector(
-                onTap: () => _onTabChanged(2),
-                child: Container(
-                  width: 88,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2B9FDB), // Figma blue color
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(
-                        Icons.add_circle,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Post Job',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
+          // Responsive nav item width
+          final navItemWidth = (screenWidth * 0.16).clamp(54.0, 70.0);
+
+          // Responsive center button size
+          final centerButtonWidth = (screenWidth * 0.235).clamp(80.0, 98.0);
+          final centerButtonHeight = (navItemWidth * 0.93).clamp(50.0, 60.0);
+
+          return Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                top: BorderSide(
+                  color: Color(0xFFCAC9C9),
+                  width: 1,
                 ),
               ),
-              _NavItem(
-                icon: Icons.person_outline,
-                activeIcon: Icons.person,
-                label: 'Profile',
-                isSelected: _index == 3,
-                onTap: () => _onTabChanged(3),
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0x0D000000),
+                  offset: Offset(0, -2),
+                  blurRadius: 8,
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: SafeArea(
+              top: false,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _NavItem(
+                    icon: Icons.home_outlined,
+                    activeIcon: Icons.home,
+                    label: 'Home',
+                    isSelected: _index == 0,
+                    onTap: () => _onTabChanged(0),
+                    width: navItemWidth,
+                  ),
+                  _NavItem(
+                    icon: Icons.search,
+                    activeIcon: Icons.search,
+                    label: 'Explore',
+                    isSelected: _index == 1,
+                    onTap: () => _onTabChanged(1),
+                    width: navItemWidth,
+                  ),
+                  // Post Job - center button
+                  GestureDetector(
+                    onTap: () => _onTabChanged(2),
+                    child: Container(
+                      width: centerButtonWidth,
+                      height: centerButtonHeight,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2B9FDB),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.add_circle,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Post Job',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  _NavItem(
+                    icon: Icons.person_outline,
+                    activeIcon: Icons.person,
+                    label: 'Profile',
+                    isSelected: _index == 3,
+                    onTap: () => _onTabChanged(3),
+                    width: navItemWidth,
+                  ),
+                  _NavItemWithCircle(
+                    label: 'More',
+                    isSelected: _index == 4,
+                    onTap: () => _onTabChanged(4),
+                    width: navItemWidth,
+                  ),
+                ],
               ),
-              _NavItemWithCircle(
-                label: 'More',
-                isSelected: _index == 4,
-                onTap: () => _onTabChanged(4),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -163,6 +178,7 @@ class _NavItem extends StatelessWidget {
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
+  final double width;
 
   const _NavItem({
     required this.icon,
@@ -170,17 +186,17 @@ class _NavItem extends StatelessWidget {
     required this.label,
     required this.isSelected,
     required this.onTap,
+    required this.width,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Figma colors - blue for selected, gray for unselected
     final color = isSelected ? const Color(0xFF2B9FDB) : const Color(0xFF8F959E);
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
-        width: 60,
+        width: width,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -210,11 +226,13 @@ class _NavItemWithCircle extends StatelessWidget {
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
+  final double width;
 
   const _NavItemWithCircle({
     required this.label,
     required this.isSelected,
     required this.onTap,
+    required this.width,
   });
 
   @override
@@ -225,7 +243,7 @@ class _NavItemWithCircle extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
-        width: 60,
+        width: width,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -522,7 +540,6 @@ class _SavedItemsPageInternalState extends State<_SavedItemsPageInternal> {
 
   @override
   Widget build(BuildContext context) {
-    // Use UniqueKey to force rebuild when refresh is called
     return SavedItemsPage(
       key: ValueKey(_refreshKey),
       onBackToHome: widget.onBackToHome,
