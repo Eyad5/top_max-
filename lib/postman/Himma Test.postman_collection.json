@@ -1,0 +1,2494 @@
+{
+  "info": {
+    "_postman_id": "aebe3dce-abd7-48dc-8b2c-19bb712c2c91",
+    "name": "Himma Test",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "30757868",
+    "_collection_link": "https://go.postman.co/collection/45494158-aebe3dce-abd7-48dc-8b2c-19bb712c2c91?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "request-otp",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "ar",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "phone",
+                  "value": "01223456",
+                  "type": "text"
+                },
+                {
+                  "key": "country_id",
+                  "value": "1",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}user/request-otp",
+              "host": [
+                "{{base_url}}user"
+              ],
+              "path": [
+                "request-otp"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "request-otp",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"phone\": \"012245678\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}user/request-otp",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "request-otp"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 01 May 2025 09:41:37 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "59"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"OTP sent successfully.\",\n    \"status_code\": \"SC-200\",\n    \"data\": {\n        \"user_id\": 4\n    }\n}"
+            },
+            {
+              "name": "request-otp",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept-Language",
+                    "value": "ar",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"phone\": \"83648937398\",\r\n  \"country_id\": 1\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}user/request-otp",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "request-otp"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 29 May 2025 10:03:30 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "56"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"OTP already sent and still valid.\",\n    \"status_code\": \"SC-200\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "verify-otp",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json();\r",
+                  "\r",
+                  "// store the token in environment variable\r",
+                  "if (response.data && response.data.token) {\r",
+                  "    pm.environment.set(\"user-token\", response.data.token);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "User-Agent",
+                "value": "okhttp",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "phone",
+                  "value": "5014321231",
+                  "type": "text"
+                },
+                {
+                  "key": "otp",
+                  "value": "123456",
+                  "type": "text"
+                },
+                {
+                  "key": "country_id",
+                  "value": "1",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}user/verify-otp",
+              "host": [
+                "{{base_url}}user"
+              ],
+              "path": [
+                "verify-otp"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "verify-otp",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"phone\": \"012245678\",\r\n  \"otp\": \"123456\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}user/verify-otp",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "verify-otp"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 01 May 2025 09:42:05 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "58"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"OTP verified.\",\n    \"status_code\": \"SC-200\",\n    \"data\": {\n        \"token\": \"24|NpFX4MqX6YF4XFSL7kx15ToSyrd6ujBlqnW8jrKn9f304283\",\n        \"user\": {\n            \"id\": 4,\n            \"phone\": \"012245678\",\n            \"email\": null,\n            \"first_name\": null,\n            \"last_name\": null,\n            \"gender\": null,\n            \"city\": null,\n            \"disability_id\": null,\n            \"is_verified\": true,\n            \"is_completed\": false,\n            \"created_at\": \"2025-05-01T09:41:36.000000Z\"\n        },\n        \"next_step\": \"complete_registration\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "resend-otp",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"phone\": \"01234556788\",\r\n    \"country_id\": 4\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}user/resend-otp",
+              "host": [
+                "{{base_url}}user"
+              ],
+              "path": [
+                "resend-otp"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "resend-otp",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"phone\": \"01224757578\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}user/resend-otp",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "resend-otp"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 29 May 2025 09:21:18 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "57"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"OTP resent successfully.\",\n    \"status_code\": \"SC-200\"\n}"
+            },
+            {
+              "name": "resend-otp-after-1minute",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"phone\": \"83648937398\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}user/resend-otp",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "resend-otp"
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 29 May 2025 10:38:33 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "55"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"fail\",\n    \"message\": \"You can request a new OTP after 1 minute.\",\n    \"status_code\": \"ER-429\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user-token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}user/logout",
+              "host": [
+                "{{base_url}}user"
+              ],
+              "path": [
+                "logout"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "logout",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}user/logout",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "logout"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 01 May 2025 08:21:30 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "59"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Logged out successfully.\",\n    \"status_code\": \"SC-200\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Home",
+      "item": [
+        {
+          "name": "mobile-home",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user-token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}mobile/home?page=1&per_page=0",
+              "host": [
+                "{{base_url}}mobile"
+              ],
+              "path": [
+                "home"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "mobile-home-with-token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{base_url}}mobile/home",
+                  "host": [
+                    "{{base_url}}mobile"
+                  ],
+                  "path": [
+                    "home"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 03 Jun 2025 10:11:41 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "58"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Mobile home data fetched successfully.\",\n    \"status_code\": \"SC-200\",\n    \"data\": {\n        \"featured_jobs\": [],\n        \"recent_openings\": [\n            {\n                \"id\": 25,\n                \"company_id\": 12,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-06-03 09:40:52\"\n            },\n            {\n                \"id\": 24,\n                \"company_id\": 12,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-06-03 07:48:31\"\n            },\n            {\n                \"id\": 23,\n                \"company_id\": 12,\n                \"job_title\": \"Senior Laravel\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 8000,\n                \"max_salary\": 12000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"senior\",\n                \"education\": \"Bachelor's\",\n                \"job_type\": \"full-time\",\n                \"location_priority\": \"remote\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-06-03 07:47:55\"\n            },\n            {\n                \"id\": 22,\n                \"company_id\": 12,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-06-03 07:46:54\"\n            },\n            {\n                \"id\": 21,\n                \"company_id\": 1,\n                \"job_title\": \"Qui adipisicing face\",\n                \"job_description\": \"Magni necessitatibus\",\n                \"min_salary\": 36,\n                \"max_salary\": 55,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"director\",\n                \"education\": \"Sint consequat Lab\",\n                \"job_type\": \"internship\",\n                \"location_priority\": \"remote\",\n                \"office_location\": \"Ipsa aliquam sint m\",\n                \"is_multiple_hires\": false,\n                \"is_urgent\": false,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-23 08:09:34\"\n            },\n            {\n                \"id\": 20,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-17 10:31:46\"\n            },\n            {\n                \"id\": 19,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:59:17\"\n            },\n            {\n                \"id\": 18,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:57:27\"\n            },\n            {\n                \"id\": 17,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:56:35\"\n            },\n            {\n                \"id\": 16,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:54:58\"\n            }\n        ],\n        \"disability_jobs\": [\n            {\n                \"id\": 22,\n                \"company_id\": 12,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-06-03 07:46:54\"\n            },\n            {\n                \"id\": 23,\n                \"company_id\": 12,\n                \"job_title\": \"Senior Laravel\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 8000,\n                \"max_salary\": 12000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"senior\",\n                \"education\": \"Bachelor's\",\n                \"job_type\": \"full-time\",\n                \"location_priority\": \"remote\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-06-03 07:47:55\"\n            }\n        ],\n        \"courses_for_you\": [\n            {\n                \"id\": 2,\n                \"title\": \"Mastering UI/UX Design\",\n                \"description\": \"Comprehensive course in UI/UX with hands-on projects.\",\n                \"featured_image\": \"http://127.0.0.1:8000/storage/22/681b645525f28.jpg\",\n                \"course_category\": \"Customer Service\",\n                \"price\": \"0.00\",\n                \"is_free\": 1,\n                \"level\": \"beginner\",\n                \"has_certificate\": 1,\n                \"available_seats\": 50,\n                \"company_id\": 1,\n                \"status\": \"active\",\n                \"total_enrolled\": null,\n                \"seats_percentage\": 0\n            },\n            {\n                \"id\": 3,\n                \"title\": \"Mastering UI/UX Design\",\n                \"description\": \"Comprehensive course in UI/UX with hands-on projects.\",\n                \"featured_image\": null,\n                \"course_category\": \"Customer Service\",\n                \"price\": \"0.00\",\n                \"is_free\": 1,\n                \"level\": \"beginner\",\n                \"has_certificate\": 1,\n                \"available_seats\": 50,\n                \"company_id\": 1,\n                \"status\": \"active\",\n                \"total_enrolled\": null,\n                \"seats_percentage\": 0\n            },\n            {\n                \"id\": 4,\n                \"title\": \"Mastering UI/UX Design\",\n                \"description\": \"Comprehensive course in UI/UX with hands-on projects.\",\n                \"featured_image\": null,\n                \"course_category\": \"Customer Service\",\n                \"price\": \"0.00\",\n                \"is_free\": 1,\n                \"level\": \"beginner\",\n                \"has_certificate\": 1,\n                \"available_seats\": 50,\n                \"company_id\": 1,\n                \"status\": \"active\",\n                \"total_enrolled\": null,\n                \"seats_percentage\": 0\n            },\n            {\n                \"id\": 6,\n                \"title\": \"Mastering UI/UX Design\",\n                \"description\": \"Comprehensive course in UI/UX with hands-on projects.\",\n                \"featured_image\": null,\n                \"course_category\": \"Customer Service\",\n                \"price\": \"0.00\",\n                \"is_free\": 1,\n                \"level\": \"beginner\",\n                \"has_certificate\": 1,\n                \"available_seats\": 50,\n                \"company_id\": 1,\n                \"status\": \"active\",\n                \"total_enrolled\": null,\n                \"seats_percentage\": 0\n            },\n            {\n                \"id\": 7,\n                \"title\": \"Mastering UI/UX Design\",\n                \"description\": \"Comprehensive course in UI/UX with hands-on projects.\",\n                \"featured_image\": null,\n                \"course_category\": \"Customer Service\",\n                \"price\": \"0.00\",\n                \"is_free\": 1,\n                \"level\": \"beginner\",\n                \"has_certificate\": 1,\n                \"available_seats\": 50,\n                \"company_id\": 1,\n                \"status\": \"active\",\n                \"total_enrolled\": null,\n                \"seats_percentage\": 0\n            }\n        ],\n        \"featured_jobs_for_you\": [],\n        \"matched_jobs\": [\n            {\n                \"id\": 1,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 8000,\n                \"max_salary\": 12000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"senior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"full-time\",\n                \"location_priority\": \"remote\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-05 11:57:01\"\n            },\n            {\n                \"id\": 2,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 8000,\n                \"max_salary\": 12000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"senior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"full-time\",\n                \"location_priority\": \"remote\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-06 11:15:48\"\n            },\n            {\n                \"id\": 3,\n                \"company_id\": 1,\n                \"job_title\": \"junior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 5000,\n                \"max_salary\": 11000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"remote\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-06 11:16:55\"\n            },\n            {\n                \"id\": 4,\n                \"company_id\": 1,\n                \"job_title\": \"junior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 5000,\n                \"max_salary\": 11000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"remote\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-06 11:17:01\"\n            },\n            {\n                \"id\": 5,\n                \"company_id\": 1,\n                \"job_title\": \"junior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 5000,\n                \"max_salary\": 11000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"remote\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-06 11:17:57\"\n            },\n            {\n                \"id\": 6,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-06 11:18:10\"\n            },\n            {\n                \"id\": 7,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:41:34\"\n            },\n            {\n                \"id\": 8,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:44:07\"\n            },\n            {\n                \"id\": 9,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:46:48\"\n            },\n            {\n                \"id\": 10,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": false,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:48:01\"\n            }\n        ]\n    }\n}"
+            },
+            {
+              "name": "mobile-home-guest",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{base_url}}mobile/home",
+                  "host": [
+                    "{{base_url}}mobile"
+                  ],
+                  "path": [
+                    "home"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 03 Jun 2025 10:53:13 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "59"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Mobile home data fetched successfully.\",\n    \"status_code\": \"SC-200\",\n    \"data\": {\n        \"featured_jobs\": [],\n        \"recent_openings\": [\n            {\n                \"id\": 25,\n                \"company_id\": 12,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": null,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-06-03 09:40:52\"\n            },\n            {\n                \"id\": 24,\n                \"company_id\": 12,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": null,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-06-03 07:48:31\"\n            },\n            {\n                \"id\": 23,\n                \"company_id\": 12,\n                \"job_title\": \"Senior Laravel\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 8000,\n                \"max_salary\": 12000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"senior\",\n                \"education\": \"Bachelor's\",\n                \"job_type\": \"full-time\",\n                \"location_priority\": \"remote\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": null,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-06-03 07:47:55\"\n            },\n            {\n                \"id\": 22,\n                \"company_id\": 12,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": null,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-06-03 07:46:54\"\n            },\n            {\n                \"id\": 21,\n                \"company_id\": 1,\n                \"job_title\": \"Qui adipisicing face\",\n                \"job_description\": \"Magni necessitatibus\",\n                \"min_salary\": 36,\n                \"max_salary\": 55,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"director\",\n                \"education\": \"Sint consequat Lab\",\n                \"job_type\": \"internship\",\n                \"location_priority\": \"remote\",\n                \"office_location\": \"Ipsa aliquam sint m\",\n                \"is_multiple_hires\": false,\n                \"is_urgent\": false,\n                \"is_saved\": null,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-23 08:09:34\"\n            },\n            {\n                \"id\": 20,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": null,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-17 10:31:46\"\n            },\n            {\n                \"id\": 19,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": null,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:59:17\"\n            },\n            {\n                \"id\": 18,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": null,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:57:27\"\n            },\n            {\n                \"id\": 17,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": null,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:56:35\"\n            },\n            {\n                \"id\": 16,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's degree or higher.\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": null,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:54:58\"\n            }\n        ],\n        \"disability_jobs\": [\n            {\n                \"id\": 22,\n                \"company_id\": 12,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 2000,\n                \"max_salary\": 10000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"junior\",\n                \"education\": \"Bachelor's\",\n                \"job_type\": \"part-time\",\n                \"location_priority\": \"hybrid\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": null,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-06-03 07:46:54\"\n            },\n            {\n                \"id\": 23,\n                \"company_id\": 12,\n                \"job_title\": \"Senior Laravel\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"min_salary\": 8000,\n                \"max_salary\": 12000,\n                \"salary_to_be_discussed\": false,\n                \"experience_level\": \"senior\",\n                \"education\": \"Bachelor's\",\n                \"job_type\": \"full-time\",\n                \"location_priority\": \"remote\",\n                \"office_location\": \"Cairo, Egypt\",\n                \"is_multiple_hires\": true,\n                \"is_urgent\": true,\n                \"is_saved\": null,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-06-03 07:47:55\"\n            }\n        ]\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}home/search?location_type=hybrid",
+              "host": [
+                "{{base_url}}home"
+              ],
+              "path": [
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "Laravel",
+                  "disabled": true
+                },
+                {
+                  "key": "location",
+                  "value": "Riyadh",
+                  "disabled": true
+                },
+                {
+                  "key": "salary_min",
+                  "value": "2000",
+                  "disabled": true
+                },
+                {
+                  "key": "salary_max",
+                  "value": "50000",
+                  "disabled": true
+                },
+                {
+                  "key": "experience",
+                  "value": "mid-level",
+                  "description": "mid-level, junior,senior, lead, director,excutive",
+                  "disabled": true
+                },
+                {
+                  "key": "job_type",
+                  "value": "part-time",
+                  "disabled": true
+                },
+                {
+                  "key": "location_type",
+                  "value": "hybrid",
+                  "description": "remote, onsite, hybrid"
+                },
+                {
+                  "key": "disability",
+                  "value": "22",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "search",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}home/search",
+                  "host": [
+                    "{{base_url}}home"
+                  ],
+                  "path": [
+                    "search"
+                  ],
+                  "query": [
+                    {
+                      "key": "keyword",
+                      "value": "Laravel",
+                      "disabled": true
+                    },
+                    {
+                      "key": "location",
+                      "value": "Riyadh",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 19 May 2025 12:18:17 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "56"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Jobs fetched successfully.\",\n    \"status_code\": \"SC-200\",\n    \"data\": {\n        \"data\": [\n            {\n                \"id\": 20,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"applications_count\": 0,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-17 10:31:46\"\n            },\n            {\n                \"id\": 19,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"applications_count\": 0,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:59:17\"\n            },\n            {\n                \"id\": 18,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"applications_count\": 0,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:57:27\"\n            },\n            {\n                \"id\": 17,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"applications_count\": 0,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:56:35\"\n            },\n            {\n                \"id\": 16,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"applications_count\": 0,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:54:58\"\n            },\n            {\n                \"id\": 15,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"applications_count\": 0,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:54:43\"\n            },\n            {\n                \"id\": 14,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"applications_count\": 0,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:54:16\"\n            },\n            {\n                \"id\": 13,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"applications_count\": 0,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:51:50\"\n            },\n            {\n                \"id\": 12,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"applications_count\": 0,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:50:31\"\n            },\n            {\n                \"id\": 11,\n                \"company_id\": 1,\n                \"job_title\": \"Senior Laravel Developer\",\n                \"job_description\": \"Responsible for building and maintaining web applications.\",\n                \"applications_count\": 0,\n                \"status\": \"opened\",\n                \"created_at\": \"2025-05-07 08:49:24\"\n            }\n        ],\n        \"pagination\": {\n            \"total\": 20,\n            \"per_page\": 10,\n            \"current_page\": 1,\n            \"last_page\": 2,\n            \"from\": 1,\n            \"to\": 10,\n            \"has_more_pages\": true\n        }\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Saved Jobs/Courses Copy",
+      "item": [
+        {
+          "name": "saved-items",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user-token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}user/saved-items?type=jobs",
+              "host": [
+                "{{base_url}}user"
+              ],
+              "path": [
+                "saved-items"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "jobs",
+                  "description": "jobs/ courses"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "saved-items",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}user/saved-items?type=jobs",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "saved-items"
+                  ],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "jobs",
+                      "description": "jobs/ courses"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 01 Jul 2025 12:12:43 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "59"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Saved items fetched successfully.\",\n    \"status_code\": \"SC-200\",\n    \"data\": {\n        \"data\": [\n            {\n                \"id\": 1,\n                \"job_title\": \"Transportation Attendant\",\n                \"company_id\": 1,\n                \"company_logo\": null,\n                \"company_name\": \"Florence Melendez\",\n                \"job_description\": \"Ex quaerat vero magnam autem. Laborum quaerat aut beatae est quisquam placeat quod. Placeat consequuntur est quisquam dolorem cum cum laborum tempora.\",\n                \"location_priority\": \"remote\",\n                \"status\": \"opened\",\n                \"app_status\": null,\n                \"min_salary\": 3000,\n                \"max_salary\": 6000,\n                \"job_type\": \"part-time\",\n                \"office_location\": \"Bridgetburgh\",\n                \"type\": \"job\",\n                \"is_multiple_hires\": false,\n                \"is_urgent\": false,\n                \"is_featured\": true,\n                \"is_saved\": true,\n                \"created_at\": \"2025-06-20 08:10:26\",\n                \"active_since\": \"Active 1 week ago\",\n                \"formatted_salary\": \"From AED 3000 / month\"\n            }\n        ],\n        \"pagination\": {\n            \"total\": 1,\n            \"per_page\": 12,\n            \"current_page\": 1,\n            \"last_page\": 1,\n            \"from\": 1,\n            \"to\": 1,\n            \"has_more_pages\": false\n        }\n    }\n}"
+            },
+            {
+              "name": "saved-items",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}user/saved-items?type=courses",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "saved-items"
+                  ],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "courses",
+                      "description": "jobs/ courses"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 01 Jul 2025 12:19:06 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "59"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Saved items fetched successfully.\",\n    \"status_code\": \"SC-200\",\n    \"data\": {\n        \"data\": [\n            {\n                \"id\": 2,\n                \"title\": \"Mastering UI/UX Design\",\n                \"course_category\": \"Customer Service\",\n                \"featured_image\": null,\n                \"company_name\": \"Top Max\",\n                \"location\": \"Office 112, Top Max Technology, Dubai\",\n                \"is_saved\": true,\n                \"start_date\": \"2025-06-01\",\n                \"price\": \"0.00\",\n                \"type\": \"course\",\n                \"created_at\": \"1 day ago\",\n                \"formatted_price\": \"Free\",\n                \"formatted_created_at\": \"30 June 2025\"\n            }\n        ],\n        \"pagination\": {\n            \"total\": 1,\n            \"per_page\": 12,\n            \"current_page\": 1,\n            \"last_page\": 1,\n            \"from\": 1,\n            \"to\": 1,\n            \"has_more_pages\": false\n        }\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "jobs",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user-token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}user/jobs",
+              "host": [
+                "{{base_url}}user"
+              ],
+              "path": [
+                "jobs"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Bellhop",
+                  "disabled": true
+                },
+                {
+                  "key": "office_location",
+                  "value": "Cairo, Egypt",
+                  "disabled": true
+                },
+                {
+                  "key": "job_type",
+                  "value": "part-time",
+                  "disabled": true
+                },
+                {
+                  "key": "experience_level",
+                  "value": "lead",
+                  "disabled": true
+                },
+                {
+                  "key": "min_salary",
+                  "value": "2000",
+                  "disabled": true
+                },
+                {
+                  "key": "max_salary",
+                  "value": "6000",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "is_featured_jobs",
+                  "value": "false",
+                  "disabled": true
+                },
+                {
+                  "key": "is_recent_openings",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "is_disability_jobs",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "featured_jobs_for_you",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "matched_jobs",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "per_page",
+                  "value": "12",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "jobs",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}user/jobs?page=1",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "jobs"
+                  ],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": "Senior Laravel",
+                      "disabled": true
+                    },
+                    {
+                      "key": "office_location",
+                      "value": "Cairo, Egypt",
+                      "disabled": true
+                    },
+                    {
+                      "key": "job_type",
+                      "value": "full-time",
+                      "disabled": true
+                    },
+                    {
+                      "key": "experience_level",
+                      "value": "senior",
+                      "disabled": true
+                    },
+                    {
+                      "key": "min_salary",
+                      "value": "8000",
+                      "disabled": true
+                    },
+                    {
+                      "key": "max_salary",
+                      "value": "10000",
+                      "disabled": true
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 06 May 2025 11:19:35 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "58"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Jobs fetched successfully.\",\n    \"status_code\": \"SC-200\",\n    \"data\": [\n        {\n            \"id\": 6,\n            \"company_id\": 1,\n            \"job_title\": \"Senior Laravel Developer\",\n            \"job_description\": \"Responsible for building and maintaining web applications.\",\n            \"responsibilities\": \"Write clean, scalable code.\",\n            \"requirements\": \"3+ years Laravel experience.\",\n            \"qualifications\": \"BSc Computer Science\",\n            \"benefits\": \"BSc Computer Science\",\n            \"min_salary\": 2000,\n            \"max_salary\": 10000,\n            \"salary_to_be_discussed\": false,\n            \"experience_level\": \"junior\",\n            \"education\": \"Bachelor's degree or higher.\",\n            \"job_type\": \"part-time\",\n            \"location_priority\": \"hybrid\",\n            \"office_location\": \"Cairo, Egypt\",\n            \"is_multiple_hires\": true,\n            \"is_urgent\": true,\n            \"status\": \"opened\",\n            \"created_at\": \"2025-05-06 11:18:10\"\n        },\n        {\n            \"id\": 5,\n            \"company_id\": 1,\n            \"job_title\": \"junior Laravel Developer\",\n            \"job_description\": \"Responsible for building and maintaining web applications.\",\n            \"responsibilities\": \"Write clean, scalable code.\",\n            \"requirements\": \"3+ years Laravel experience.\",\n            \"qualifications\": \"BSc Computer Science\",\n            \"benefits\": \"BSc Computer Science\",\n            \"min_salary\": 5000,\n            \"max_salary\": 11000,\n            \"salary_to_be_discussed\": false,\n            \"experience_level\": \"mid-senior\",\n            \"education\": \"Bachelor's degree or higher.\",\n            \"job_type\": \"part-time\",\n            \"location_priority\": \"remote\",\n            \"office_location\": \"Cairo, Egypt\",\n            \"is_multiple_hires\": true,\n            \"is_urgent\": true,\n            \"status\": \"opened\",\n            \"created_at\": \"2025-05-06 11:17:57\"\n        },\n        {\n            \"id\": 4,\n            \"company_id\": 1,\n            \"job_title\": \"junior Laravel Developer\",\n            \"job_description\": \"Responsible for building and maintaining web applications.\",\n            \"responsibilities\": \"Write clean, scalable code.\",\n            \"requirements\": \"3+ years Laravel experience.\",\n            \"qualifications\": \"BSc Computer Science\",\n            \"benefits\": \"BSc Computer Science\",\n            \"min_salary\": 5000,\n            \"max_salary\": 11000,\n            \"salary_to_be_discussed\": false,\n            \"experience_level\": \"mid-senior\",\n            \"education\": \"Bachelor's degree or higher.\",\n            \"job_type\": \"part-time\",\n            \"location_priority\": \"remote\",\n            \"office_location\": \"Cairo, Egypt\",\n            \"is_multiple_hires\": true,\n            \"is_urgent\": true,\n            \"status\": \"opened\",\n            \"created_at\": \"2025-05-06 11:17:01\"\n        },\n        {\n            \"id\": 3,\n            \"company_id\": 1,\n            \"job_title\": \"junior Laravel Developer\",\n            \"job_description\": \"Responsible for building and maintaining web applications.\",\n            \"responsibilities\": \"Write clean, scalable code.\",\n            \"requirements\": \"3+ years Laravel experience.\",\n            \"qualifications\": \"BSc Computer Science\",\n            \"benefits\": \"BSc Computer Science\",\n            \"min_salary\": 5000,\n            \"max_salary\": 11000,\n            \"salary_to_be_discussed\": false,\n            \"experience_level\": \"mid-senior\",\n            \"education\": \"Bachelor's degree or higher.\",\n            \"job_type\": \"part-time\",\n            \"location_priority\": \"remote\",\n            \"office_location\": \"Cairo, Egypt\",\n            \"is_multiple_hires\": true,\n            \"is_urgent\": true,\n            \"status\": \"opened\",\n            \"created_at\": \"2025-05-06 11:16:55\"\n        },\n        {\n            \"id\": 2,\n            \"company_id\": 1,\n            \"job_title\": \"junior Laravel Developer\",\n            \"job_description\": \"Responsible for building and maintaining web applications.\",\n            \"responsibilities\": \"Write clean, scalable code.\",\n            \"requirements\": \"3+ years Laravel experience.\",\n            \"qualifications\": \"BSc Computer Science\",\n            \"benefits\": \"BSc Computer Science\",\n            \"min_salary\": 2000,\n            \"max_salary\": 10000,\n            \"salary_to_be_discussed\": false,\n            \"experience_level\": \"junior\",\n            \"education\": \"Bachelor's degree or higher.\",\n            \"job_type\": \"part-time\",\n            \"location_priority\": \"hybrid\",\n            \"office_location\": \"Cairo, Egypt\",\n            \"is_multiple_hires\": true,\n            \"is_urgent\": true,\n            \"status\": \"opened\",\n            \"created_at\": \"2025-05-06 11:15:48\"\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "job-details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user-token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}user/jobs/1",
+              "host": [
+                "{{base_url}}user"
+              ],
+              "path": [
+                "jobs",
+                "1"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "job-details",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}user/jobs/1",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "jobs",
+                    "1"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 02 Jul 2025 13:14:17 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "58"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Job details fetched successfully.\",\n    \"status_code\": \"SC-200\",\n    \"data\": {\n        \"id\": 1,\n        \"company_id\": 1,\n        \"company\": {\n            \"id\": 1,\n            \"name\": \"Florence Melendez\",\n            \"logo\": null\n        },\n        \"job_title\": \"Transportation Attendant\",\n        \"job_description\": \"Ex quaerat vero magnam autem. Laborum quaerat aut beatae est quisquam placeat quod. Placeat consequuntur est quisquam dolorem cum cum laborum tempora.\",\n        \"responsibilities\": \"Distinctio vel quasi veniam velit dolores esse dolore. Facere veritatis quisquam laboriosam a provident sint. Qui iusto aut excepturi iusto.\",\n        \"requirements\": \"Quaerat voluptas minima eveniet illum et quos soluta.\",\n        \"qualifications\": \"Recusandae repellat ullam asperiores facilis aut omnis.\",\n        \"benefits\": \"Nulla et omnis quia odit in.\",\n        \"min_salary\": 3000,\n        \"max_salary\": 6000,\n        \"salary_to_be_discussed\": false,\n        \"experience_level\": \"senior\",\n        \"years_of_experience\": 0,\n        \"city_id\": null,\n        \"education\": \"bachelor\",\n        \"job_type\": \"part-time\",\n        \"location_priority\": \"remote\",\n        \"office_location\": \"Bridgetburgh\",\n        \"is_multiple_hires\": false,\n        \"is_urgent\": false,\n        \"is_saved\": true,\n        \"disability_other\": null,\n        \"status\": \"opened\",\n        \"has_applied\": false,\n        \"created_at\": \"2025-06-20 08:10:26\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "toggle-save",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user-token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}user/jobs/1/toggle-save",
+              "host": [
+                "{{base_url}}user"
+              ],
+              "path": [
+                "jobs",
+                "1",
+                "toggle-save"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "saved",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}user/jobs/1/toggle-save",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "jobs",
+                    "1",
+                    "toggle-save"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 06 May 2025 13:10:36 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "59"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Job saved successfully.\",\n    \"status_code\": \"SC-200\"\n}"
+            },
+            {
+              "name": "removed save",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}user/jobs/1/toggle-save",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "jobs",
+                    "1",
+                    "toggle-save"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 06 May 2025 13:11:33 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "58"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Job removed from saved list.\",\n    \"status_code\": \"SC-200\"\n}"
+            },
+            {
+              "name": "toggle-save",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}user/jobs/1/toggle-save",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "jobs",
+                    "1",
+                    "toggle-save"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 09 Jun 2025 11:47:19 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "58"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Job removed from wishlist.\",\n    \"status_code\": \"SC-200\",\n    \"data\": {\n        \"is_in_wishlist\": false\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Courses",
+      "item": [
+        {
+          "name": "courses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}user/courses",
+              "host": [
+                "{{base_url}}user"
+              ],
+              "path": [
+                "courses"
+              ],
+              "query": [
+                {
+                  "key": "category_id",
+                  "value": "3",
+                  "disabled": true
+                },
+                {
+                  "key": "level",
+                  "value": "beginner",
+                  "disabled": true
+                },
+                {
+                  "key": "type",
+                  "value": "online",
+                  "disabled": true
+                },
+                {
+                  "key": "has_certificate",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "Mastering",
+                  "disabled": true
+                },
+                {
+                  "key": "courses_for_you",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "start_date",
+                  "value": "2025-06-1",
+                  "disabled": true
+                },
+                {
+                  "key": "per_page",
+                  "value": "8",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "courses",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}user/courses?category_id=3&level=beginner&type=online&has_certificate=1&page=1&search=Mastering",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "courses"
+                  ],
+                  "query": [
+                    {
+                      "key": "category_id",
+                      "value": "3"
+                    },
+                    {
+                      "key": "level",
+                      "value": "beginner"
+                    },
+                    {
+                      "key": "type",
+                      "value": "online"
+                    },
+                    {
+                      "key": "has_certificate",
+                      "value": "1"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "search",
+                      "value": "Mastering"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 08 May 2025 10:11:35 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "59"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Courses fetched successfully.\",\n    \"status_code\": \"SC-200\",\n    \"data\": {\n        \"courses\": [\n            {\n                \"id\": 16,\n                \"title\": \"Mastering UI/UX Design\",\n                \"description\": \"Comprehensive course in UI/UX with hands-on projects.\",\n                \"featured_image\": null,\n                \"price\": \"0.00\",\n                \"is_free\": 1,\n                \"company_id\": 1,\n                \"status\": \"active\"\n            },\n            {\n                \"id\": 15,\n                \"title\": \"Mastering UI/UX Design\",\n                \"description\": \"Comprehensive course in UI/UX with hands-on projects.\",\n                \"featured_image\": null,\n                \"price\": \"0.00\",\n                \"is_free\": 1,\n                \"company_id\": 1,\n                \"status\": \"active\"\n            },\n            {\n                \"id\": 14,\n                \"title\": \"Mastering UI/UX Design\",\n                \"description\": \"Comprehensive course in UI/UX with hands-on projects.\",\n                \"featured_image\": \"http://127.0.0.1:8000/storage/20/681b5768d8c47.jpg\",\n                \"price\": \"0.00\",\n                \"is_free\": 1,\n                \"company_id\": 1,\n                \"status\": \"active\"\n            },\n            {\n                \"id\": 13,\n                \"title\": \"Mastering UI/UX Design\",\n                \"description\": \"Comprehensive course in UI/UX with hands-on projects.\",\n                \"featured_image\": \"http://127.0.0.1:8000/storage/19/681b56afcdb37.jpg\",\n                \"price\": \"0.00\",\n                \"is_free\": 1,\n                \"company_id\": 1,\n                \"status\": \"active\"\n            },\n            {\n                \"id\": 12,\n                \"title\": \"Mastering UI/UX Design\",\n                \"description\": \"Comprehensive course in UI/UX with hands-on projects.\",\n                \"featured_image\": \"http://127.0.0.1:8000/storage/18/681b55f958370.jpg\",\n                \"price\": \"0.00\",\n                \"is_free\": 1,\n                \"company_id\": 1,\n                \"status\": \"active\"\n            },\n            {\n                \"id\": 11,\n                \"title\": \"Mastering UI/UX Design\",\n                \"description\": \"Comprehensive course in UI/UX with hands-on projects.\",\n                \"featured_image\": \"http://127.0.0.1:8000/storage/17/681b559c4dd58.PNG\",\n                \"price\": \"0.00\",\n                \"is_free\": 1,\n                \"company_id\": 1,\n                \"status\": \"active\"\n            },\n            {\n                \"id\": 10,\n                \"title\": \"Mastering UI/UX Design\",\n                \"description\": \"Comprehensive course in UI/UX with hands-on projects.\",\n                \"featured_image\": \"805601da-ca4d-42bd-883c-f6bbe39d0d3b\",\n                \"price\": \"0.00\",\n                \"is_free\": 1,\n                \"company_id\": 1,\n                \"status\": \"active\"\n            },\n            {\n                \"id\": 9,\n                \"title\": \"Mastering UI/UX Design\",\n                \"description\": \"Comprehensive course in UI/UX with hands-on projects.\",\n                \"featured_image\": \"7b500f87-3eaf-41ac-91db-46d80722d258\",\n                \"price\": \"0.00\",\n                \"is_free\": 1,\n                \"company_id\": 1,\n                \"status\": \"active\"\n            },\n            {\n                \"id\": 8,\n                \"title\": \"Mastering UI/UX Design\",\n                \"description\": \"Comprehensive course in UI/UX with hands-on projects.\",\n                \"featured_image\": null,\n                \"price\": \"0.00\",\n                \"is_free\": 1,\n                \"company_id\": 1,\n                \"status\": \"active\"\n            },\n            {\n                \"id\": 7,\n                \"title\": \"Mastering UI/UX Design\",\n                \"description\": \"Comprehensive course in UI/UX with hands-on projects.\",\n                \"featured_image\": null,\n                \"price\": \"0.00\",\n                \"is_free\": 1,\n                \"company_id\": 1,\n                \"status\": \"active\"\n            }\n        ],\n        \"links\": {\n            \"first\": \"http://127.0.0.1:8000/api/user/courses?page=1\",\n            \"last\": \"http://127.0.0.1:8000/api/user/courses?page=2\",\n            \"prev\": null,\n            \"next\": \"http://127.0.0.1:8000/api/user/courses?page=2\"\n        },\n        \"meta\": {\n            \"current_page\": 1,\n            \"from\": 1,\n            \"last_page\": 2,\n            \"path\": \"http://127.0.0.1:8000/api/user/courses\",\n            \"per_page\": 10,\n            \"to\": 10,\n            \"total\": 14\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "course-details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user-token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}user/courses/1",
+              "host": [
+                "{{base_url}}user"
+              ],
+              "path": [
+                "courses",
+                "1"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "course-details",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}user/courses/19",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "courses",
+                    "19"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 08 May 2025 10:43:02 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "58"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Course details fetched successfully.\",\n    \"status_code\": \"SC-200\",\n    \"data\": {\n        \"id\": 19,\n        \"title\": \"Mastering UI/UX Design\",\n        \"description\": \"Comprehensive course in UI/UX with hands-on projects.\",\n        \"highlights\": [\n            \"User Interface Design basics\",\n            \"Figma basics\",\n            \"Figma advance\",\n            \"Figma prototype and animations\",\n            \"Introduction to user experience design\",\n            \"How to do research work\",\n            \"How to optimize the design\",\n            \"How to deliver the project\"\n        ],\n        \"featured_image\": \"http://127.0.0.1:8000/storage/4/681c8a2719887.jpg\",\n        \"course_category\": \"Customer Service\",\n        \"price\": \"0.00\",\n        \"is_free\": 1,\n        \"level\": \"beginner\",\n        \"has_certificate\": 1,\n        \"start_date\": \"2025-06-01\",\n        \"start_time\": \"10:00:00\",\n        \"available_seats\": 50,\n        \"type\": \"online\",\n        \"location\": null,\n        \"company_id\": 1,\n        \"status\": \"active\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "toggle-save",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user-token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}user/courses/1/save",
+              "host": [
+                "{{base_url}}user"
+              ],
+              "path": [
+                "courses",
+                "1",
+                "save"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "saved",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}user/courses/12/save",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "courses",
+                    "12",
+                    "save"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 08 May 2025 12:28:54 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "57"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Course saved successfully.\",\n    \"status_code\": \"SC-200\"\n}"
+            },
+            {
+              "name": "removed",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}user/courses/12/save",
+                  "host": [
+                    "{{base_url}}user"
+                  ],
+                  "path": [
+                    "courses",
+                    "12",
+                    "save"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 08 May 2025 12:29:20 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "59"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Course removed from saved.\",\n    \"status_code\": \"SC-200\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Location",
+      "item": [
+        {
+          "name": "countries",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}location/countries",
+              "host": [
+                "{{base_url}}location"
+              ],
+              "path": [
+                "countries"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "countries",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}location/countries",
+                  "host": [
+                    "{{base_url}}location"
+                  ],
+                  "path": [
+                    "countries"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 27 May 2025 10:52:03 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "59"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Countries fetched successfully.\",\n    \"status_code\": \"SC-200\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"Saudi Arabia\",\n            \"iso\": \"SA\",\n            \"code\": \"+966\",\n            \"flag\": \"http://127.0.0.1:8000/storage/96/flag_SA.png\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Egypt\",\n            \"iso\": \"EG\",\n            \"code\": \"+20\",\n            \"flag\": \"http://127.0.0.1:8000/storage/90/flag_EG.png\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"United Arab Emirates\",\n            \"iso\": \"AE\",\n            \"code\": \"+971\",\n            \"flag\": \"http://127.0.0.1:8000/storage/91/flag_AE.png\"\n        },\n        {\n            \"id\": 4,\n            \"name\": \"Jordan\",\n            \"iso\": \"JO\",\n            \"code\": \"+962\",\n            \"flag\": \"http://127.0.0.1:8000/storage/97/flag_JO.png\"\n        },\n        {\n            \"id\": 5,\n            \"name\": \"Morocco\",\n            \"iso\": \"MA\",\n            \"code\": \"+212\",\n            \"flag\": \"http://127.0.0.1:8000/storage/98/flag_MA.png\"\n        },\n        {\n            \"id\": 6,\n            \"name\": \"Qatar\",\n            \"iso\": \"QA\",\n            \"code\": \"+974\",\n            \"flag\": \"http://127.0.0.1:8000/storage/99/flag_QA.png\"\n        },\n        {\n            \"id\": 7,\n            \"name\": \"Kuwait\",\n            \"iso\": \"KW\",\n            \"code\": \"+965\",\n            \"flag\": \"http://127.0.0.1:8000/storage/100/flag_KW.png\"\n        },\n        {\n            \"id\": 8,\n            \"name\": \"Bahrain\",\n            \"iso\": \"BH\",\n            \"code\": \"+973\",\n            \"flag\": \"http://127.0.0.1:8000/storage/101/flag_BH.png\"\n        },\n        {\n            \"id\": 9,\n            \"name\": \"Oman\",\n            \"iso\": \"OM\",\n            \"code\": \"+968\",\n            \"flag\": \"http://127.0.0.1:8000/storage/102/flag_OM.png\"\n        },\n        {\n            \"id\": 10,\n            \"name\": \"Syria\",\n            \"iso\": \"SY\",\n            \"code\": \"+963\",\n            \"flag\": \"http://127.0.0.1:8000/storage/92/flag_SY.png\"\n        },\n        {\n            \"id\": 11,\n            \"name\": \"Palestine\",\n            \"iso\": \"PS\",\n            \"code\": \"+970\",\n            \"flag\": \"http://127.0.0.1:8000/storage/93/flag_PS.png\"\n        },\n        {\n            \"id\": 12,\n            \"name\": \"India\",\n            \"iso\": \"IN\",\n            \"code\": \"+91\",\n            \"flag\": \"http://127.0.0.1:8000/storage/94/flag_IN.png\"\n        },\n        {\n            \"id\": 13,\n            \"name\": \"Pakistan\",\n            \"iso\": \"PK\",\n            \"code\": \"+92\",\n            \"flag\": \"http://127.0.0.1:8000/storage/95/flag_PK.png\"\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "cities",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}location/countries/2/cities",
+              "host": [
+                "{{base_url}}location"
+              ],
+              "path": [
+                "countries",
+                "2",
+                "cities"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "cities",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}location/countries/2/cities",
+                  "host": [
+                    "{{base_url}}location"
+                  ],
+                  "path": [
+                    "countries",
+                    "2",
+                    "cities"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 27 May 2025 10:56:53 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "58"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Cities fetched successfully.\",\n    \"status_code\": \"SC-200\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"Cairo\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Alexandria\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"Giza\"\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "default-cities",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{company-token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}location/cities/2?return_default_cities=true",
+              "host": [
+                "{{base_url}}location"
+              ],
+              "path": [
+                "cities",
+                "2"
+              ],
+              "query": [
+                {
+                  "key": "return_default_cities",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "with id",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}location/cities/2?return_default_cities=true",
+                  "host": [
+                    "{{base_url}}location"
+                  ],
+                  "path": [
+                    "cities",
+                    "2"
+                  ],
+                  "query": [
+                    {
+                      "key": "return_default_cities",
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 31 Oct 2025 13:55:28 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "58"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Cities fetched successfully.\",\n    \"status_code\": \"SC-200\",\n    \"data\": [\n        {\n            \"id\": 7,\n            \"name\": \"Dubai\"\n        },\n        {\n            \"id\": 8,\n            \"name\": \"Abu Dhabi\"\n        },\n        {\n            \"id\": 9,\n            \"name\": \"Sharjah\"\n        }\n    ]\n}"
+            },
+            {
+              "name": "with token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}location/cities?return_default_cities=true",
+                  "host": [
+                    "{{base_url}}location"
+                  ],
+                  "path": [
+                    "cities"
+                  ],
+                  "query": [
+                    {
+                      "key": "return_default_cities",
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "127.0.0.1:8000"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.27"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 31 Oct 2025 13:55:55 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "57"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"Cities fetched successfully.\",\n    \"status_code\": \"SC-200\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"Cairo\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Alexandria\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"Giza\"\n        }\n    ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ]
+}

@@ -15,11 +15,13 @@ class SavedItemsBloc extends Bloc<SavedItemsEvent, SavedItemsState> {
 
   Future<void> _onLoad(SavedItemsLoadRequested event, Emitter<SavedItemsState> emit) async {
     final type = event.type;
+    print('\n📋 SAVED ITEMS LOAD: type=$type, page=1');
     emit(_updateLoading(type, true, clearError: true));
 
     try {
       final res = await repo.getSavedItems(type: type, page: 1, perPage: 12);
       final parsed = _parseResponse(res);
+      print('   ✅ Loaded ${parsed.items.length} $type, hasMore=${parsed.hasMore}');
 
       final updatedItems = Map<String, List<Map<String, dynamic>>>.from(state.items);
       updatedItems[type] = parsed.items;
@@ -75,13 +77,17 @@ class SavedItemsBloc extends Bloc<SavedItemsEvent, SavedItemsState> {
 
   Future<void> _onRemove(SavedItemsRemoveRequested event, Emitter<SavedItemsState> emit) async {
     final type = event.type;
+    print('\n🗑️  SAVED ITEMS REMOVE: type=$type, id=${event.id}');
     final currentItems = List<Map<String, dynamic>>.from(state.items[type] ?? []);
     final removedIndex = currentItems.indexWhere((item) {
       final id = item['id'] ?? item['job_id'] ?? item['course_id'];
       return id != null && int.tryParse(id.toString()) == event.id;
     });
 
-    if (removedIndex == -1) return;
+    if (removedIndex == -1) {
+      print('   ⚠️  Item not found in list');
+      return;
+    }
 
     final removedItem = currentItems[removedIndex];
 
@@ -93,7 +99,9 @@ class SavedItemsBloc extends Bloc<SavedItemsEvent, SavedItemsState> {
 
     try {
       await repo.removeSavedItem(type: type, id: event.id);
-    } catch (_) {
+      print('   ✅ Remove API succeeded');
+    } catch (e) {
+      print('   ❌ Remove API failed: $e - Rolling back');
       // Rollback
       final rollbackItems = Map<String, List<Map<String, dynamic>>>.from(state.items);
       final rollbackList = List<Map<String, dynamic>>.from(rollbackItems[type] ?? []);

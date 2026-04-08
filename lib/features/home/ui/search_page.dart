@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/network/dio_client.dart';
+import '../bloc/search_bloc.dart';
 import '../bloc/search_event.dart';
+import '../data/home_api.dart';
+import '../data/home_repo.dart';
 import 'search_results_page.dart';
 
 class SearchPage extends StatefulWidget {
@@ -13,32 +18,32 @@ class _SearchPageState extends State<SearchPage> {
   final _controller = TextEditingController();
   SearchMode _searchMode = SearchMode.jobs;
 
-  final List<String> popular = const [
-    'Remote Jobs',
-    'Free Courses',
-    'Entry-Level Data Entry',
-    'Artificial Intelligence',
-    'Sign Language Supported Courses',
-    'Urgent Hiring',
-  ];
-
-  final List<String> quickFilters = const [
-    'Jobs for People with Blindness',
-    'Jobs for People with Deafness',
-  ];
-
-  void _goSearch(String text) {
+  void _goSearch(String text, {String? locationType, String? jobType}) {
     final keyword = text.trim();
-    if (keyword.isEmpty) return;
+    // Allow empty keyword when filters are provided
+    if (keyword.isEmpty && locationType == null && jobType == null) return;
+
+    // Create SearchBloc and navigate
+    final homeRepo = HomeRepo(HomeApi(DioClient.dio));
+    final searchBloc = SearchBloc(homeRepo);
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => SearchResultsPage(
-          keyword: keyword,
+        builder: (_) => BlocProvider.value(
+          value: searchBloc,
+          child: SearchResultsPage(
+            keyword: keyword,
+            searchMode: _searchMode,
+            locationType: locationType,
+            jobType: jobType,
+          ),
         ),
       ),
-    );
+    ).then((_) {
+      // Close bloc when page is popped
+      searchBloc.close();
+    });
   }
 
   @override
@@ -47,7 +52,7 @@ class _SearchPageState extends State<SearchPage> {
     super.dispose();
   }
 
-  Widget _chipKeyword(String text, {String? keywordOverride, bool fullWidth = false}) {
+  Widget _chipKeyword(String text, {String? keywordOverride, SearchMode? modeOverride, String? locationType, String? jobType, bool fullWidth = false}) {
     return SizedBox(
       width: fullWidth ? double.infinity : null,
       child: Material(
@@ -60,7 +65,20 @@ class _SearchPageState extends State<SearchPage> {
           onTap: () {
             final keyword = (keywordOverride ?? text).trim();
             _controller.text = keyword;
-            _goSearch(keyword);
+
+            // 🔍 DEBUG: Log chip search mapping
+            print('\n🎯 Chip tapped: "$text"');
+            print('   Mapped keyword: "$keyword" locationType=$locationType jobType=$jobType');
+            print('   Search mode: ${modeOverride ?? _searchMode}');
+
+            // Switch mode if specified
+            if (modeOverride != null) {
+              setState(() {
+                _searchMode = modeOverride;
+              });
+            }
+
+            _goSearch(keyword, locationType: locationType, jobType: jobType);
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
@@ -233,10 +251,31 @@ class _SearchPageState extends State<SearchPage> {
                         Wrap(
                           spacing: 12,
                           runSpacing: 12,
-                          children: popular.map<Widget>((t) => _chipKeyword(t)).toList(),
+                          children: [
+                            // ✅ Remote jobs via location_type filter
+                            _chipKeyword('Remote Jobs', keywordOverride: '', locationType: 'remote'),
+
+                            // ✅ WORKING: Free courses (switches to courses mode)
+                            _chipKeyword('Free Courses', keywordOverride: 'free', modeOverride: SearchMode.courses),
+
+                            // ⚠️ BACKEND DATA: Returns results based on backend job listings
+                            // If "data entry" returns 0, it means no jobs match this keyword in backend
+                            _chipKeyword('Entry-Level Data Entry', keywordOverride: 'data entry'),
+
+                            // ✅ WORKING: AI-related jobs keyword search
+                            _chipKeyword('Artificial Intelligence', keywordOverride: 'AI'),
+
+                            // ⚠️ BACKEND DATA: Sign language courses (switches to courses mode)
+                            // Returns results based on backend course listings
+                            _chipKeyword('Sign Language Supported Courses', keywordOverride: 'sign language', modeOverride: SearchMode.courses),
+
+                            // ⚠️ BACKEND DATA: Urgent hiring jobs
+                            // Returns results based on is_urgent flag in backend
+                            _chipKeyword('Urgent Hiring', keywordOverride: 'urgent'),
+                          ],
                         ),
 
-                                  
+
 
                         const SizedBox(height: 22),
 
@@ -250,14 +289,24 @@ class _SearchPageState extends State<SearchPage> {
                         const SizedBox(height: 14),
 
                         Column(
-                          children: quickFilters
-                              .map<Widget>(
-                                (t) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 12),
-                                  child: _chipKeyword(t),
-                                ),
-                              )
-                              .toList(),
+                          children: [
+                            // ⚠️ LIMITATION: These chips use keyword search, but should ideally use disability filter param
+                            // API supports: disability=<id> filter (see home_api.dart line 25)
+                            // Current implementation: Uses keyword search as fallback
+                            // If these return 0 results, it means:
+                            //   1. Backend has no jobs with "blindness"/"deafness" in title/description
+                            //   2. OR these jobs use different keywords
+                            //   3. OR they should use disability_id filter instead
+                            // TODO: Implement filter-based search for disability chips
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _chipKeyword('Jobs for People with Blindness', keywordOverride: 'blindness'),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _chipKeyword('Jobs for People with Deafness', keywordOverride: 'deafness'),
+                            ),
+                          ],
                         ),
 
                         const SizedBox(height: 120),

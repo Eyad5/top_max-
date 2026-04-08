@@ -148,7 +148,7 @@ class JobModel {
     );
 
     // Safely parse formatted_salary (handle non-string types from API)
-    // Ignore template strings without digits (e.g. "From AED  to  / month")
+    // Reject malformed template strings like "From AED  to  / month"
     String? parsedFormattedSalary;
     final rawFormatted = src['formatted_salary'];
     if (rawFormatted != null) {
@@ -160,9 +160,17 @@ class JobModel {
         str = rawFormatted.toString().trim();
       }
 
-      // Only use if it contains at least one digit (ignore template strings)
-      if (str.isNotEmpty && str.contains(RegExp(r'\d'))) {
+      // ⚠️ VALIDATION: Only use if it contains at least one digit AND not a broken template
+      // Valid: "From AED 5000 / month", "AED 3000-8000 / month"
+      // Invalid: "From AED  to  / month" (missing numbers between placeholders)
+      final hasDigits = str.contains(RegExp(r'\d'));
+      final isBrokenTemplate = str.contains(RegExp(r'(AED\s+to\s+/)|(AED\s{2,})'));
+
+      if (str.isNotEmpty && hasDigits && !isBrokenTemplate) {
         parsedFormattedSalary = str;
+      } else if (isBrokenTemplate) {
+        // Log malformed salary strings for debugging
+        print('⚠️ JobModel #${asInt(src['id'] ?? json['id'])}: Rejected malformed formatted_salary: "$str"');
       }
     }
 
@@ -319,34 +327,42 @@ class JobModel {
   /// Returns computed salary display string, or null if salary data is missing
   /// Used by Salary Resolution Pipeline to determine if details fetch is needed
   String? get salaryDisplayResolved {
+    String? result;
+
     // Priority 1: Use formatted_salary from API if available
     if (formattedSalary != null && formattedSalary!.isNotEmpty) {
-      return formattedSalary;
+      result = formattedSalary;
     }
-
     // Priority 2: Check salary_to_be_discussed flag
-    if (salaryToBeDiscussed == true) {
-      return 'Salary to be discussed';
+    else if (salaryToBeDiscussed == true) {
+      result = 'Salary to be discussed';
     }
-
     // Priority 3: Compute from min_salary/max_salary
-    if (minSalary != null && minSalary! > 0 && maxSalary != null && maxSalary! > 0) {
+    else if (minSalary != null && minSalary! > 0 && maxSalary != null && maxSalary! > 0) {
       if (minSalary == maxSalary) {
-        return 'AED ${_formatSalary(minSalary!)} / month';
+        result = 'AED ${_formatSalary(minSalary!)} / month';
+      } else {
+        result = 'AED ${_formatSalary(minSalary!)}-${_formatSalary(maxSalary!)} / month';
       }
-      return 'AED ${_formatSalary(minSalary!)}-${_formatSalary(maxSalary!)} / month';
+    }
+    else if (minSalary != null && minSalary! > 0) {
+      result = 'From AED ${_formatSalary(minSalary!)} / month';
+    }
+    else if (maxSalary != null && maxSalary! > 0) {
+      result = 'Up to AED ${_formatSalary(maxSalary!)} / month';
     }
 
-    if (minSalary != null && minSalary! > 0) {
-      return 'From AED ${_formatSalary(minSalary!)} / month';
-    }
-
-    if (maxSalary != null && maxSalary! > 0) {
-      return 'Up to AED ${_formatSalary(maxSalary!)} / month';
+    // 💰 DEBUG: Log salary resolution for jobs with missing data
+    if (result == null && (id <= 5 || id % 10 == 0)) {
+      print('💰 Job #$id salary resolution:');
+      print('   - formattedSalary: ${formattedSalary ?? "NULL"}');
+      print('   - minSalary: ${minSalary ?? "NULL"}, maxSalary: ${maxSalary ?? "NULL"}');
+      print('   - salaryToBeDiscussed: ${salaryToBeDiscussed ?? "NULL"}');
+      print('   - RESULT: NULL (no valid salary data)');
     }
 
     // Return null to signal that salary data is missing (needs resolution)
-    return null;
+    return result;
   }
 
   /// Backward compatible getter - always returns a string

@@ -24,10 +24,11 @@ class PhonePage extends StatefulWidget {
 class _PhonePageState extends State<PhonePage> {
   final phoneController = TextEditingController();
 
+  // Default: UAE (+971) — resolved to real ID once countries load
   int? selectedCountryId;
-  String selectedCountryName = 'Choose Country';
-  String? selectedDialCode;
-  String? selectedCountryIso;
+  String selectedCountryName = 'United Arab Emirates';
+  String? selectedDialCode = '971';
+  String? selectedCountryIso = 'AE';
 
   static const int maxPhoneDigits = 9;
 
@@ -53,6 +54,24 @@ class _PhonePageState extends State<PhonePage> {
     _loadCountries();
   }
 
+  /// Resolve selectedCountryId from the loaded countries list
+  /// using the current selectedCountryIso (default: 'AE').
+  /// Called after each tier loads countries so the ID is always correct.
+  void _resolveDefaultCountryId() {
+    if (selectedCountryId != null) return; // already resolved or user picked manually
+    if (_countries.isEmpty || selectedCountryIso == null) return;
+
+    final match = _countries.cast<Map<String, dynamic>?>().firstWhere(
+      (c) => c?['iso']?.toString().toUpperCase() == selectedCountryIso!.toUpperCase(),
+      orElse: () => null,
+    );
+
+    if (match != null) {
+      selectedCountryId = (match['id'] as num).toInt();
+      debugPrint('🇦🇪 Default country resolved: id=$selectedCountryId (${match['name']})');
+    }
+  }
+
   @override
   void dispose() {
     phoneController.dispose();
@@ -75,6 +94,7 @@ class _PhonePageState extends State<PhonePage> {
 
         setState(() {
           _countries = assetCountries;
+          _resolveDefaultCountryId();
         });
         debugPrint('✓ [TIER 1] Loaded ${_countries.length} countries from assets (FALLBACK)');
       } catch (e) {
@@ -95,6 +115,7 @@ class _PhonePageState extends State<PhonePage> {
         if (decoded.length >= _countries.length) {
           setState(() {
             _countries = decoded;
+            _resolveDefaultCountryId();
           });
           debugPrint('✓ [TIER 2] Loaded ${_countries.length} countries from cache');
         }
@@ -173,6 +194,7 @@ class _PhonePageState extends State<PhonePage> {
       setState(() {
         _countries = list;
         _error = null; // Clear any previous errors
+        _resolveDefaultCountryId();
       });
 
       debugPrint('✅ [TIER 5] Loaded ${list.length} countries from API');
@@ -267,21 +289,18 @@ class _PhonePageState extends State<PhonePage> {
       context: context,
       barrierColor: Colors.black26,
       builder: (BuildContext context) {
-        return Dialog(
-          alignment: Alignment.centerLeft,
-          insetPadding: const EdgeInsets.only(left: 24, right: 240, top: 150, bottom: 150),
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
+        return Align(
+          alignment: const Alignment(-0.75, 0),
+          child: Material(
+            color: Colors.white,
             borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-            constraints: const BoxConstraints(
-              maxHeight: 320,
-              maxWidth: 140,
-            ),
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+            elevation: 8,
+            child: Container(
+              width: 120,
+              constraints: const BoxConstraints(maxHeight: 320),
+              child: ListView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
               itemCount: _countries.length,
               itemBuilder: (_, i) {
                 final c = _countries[i];
@@ -334,6 +353,7 @@ class _PhonePageState extends State<PhonePage> {
                 );
               },
             ),
+          ),
           ),
         );
       },

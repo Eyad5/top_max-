@@ -1,240 +1,268 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/search_bloc.dart';
 import '../bloc/search_event.dart';
+import '../bloc/search_state.dart';
+import '../models/job_model.dart';
 
-/// Static UI-only Search Results page matching Figma design
-/// No API calls, no Bloc - purely demo data for design showcase
-class SearchResultsPage extends StatelessWidget {
-  final String? keyword;
+/// Search Results page with real API integration via SearchBloc
+class SearchResultsPage extends StatefulWidget {
+  final String keyword;
+  final SearchMode searchMode;
+  final String? locationType;
+  final String? jobType;
 
-  const SearchResultsPage({super.key, this.keyword});
+  const SearchResultsPage({
+    super.key,
+    required this.keyword,
+    this.searchMode = SearchMode.jobs,
+    this.locationType,
+    this.jobType,
+  });
+
+  @override
+  State<SearchResultsPage> createState() => _SearchResultsPageState();
+}
+
+class _SearchResultsPageState extends State<SearchResultsPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Trigger search when page loads
+    context.read<SearchBloc>().add(SearchRequested(
+      widget.keyword,
+      searchMode: widget.searchMode,
+      locationType: widget.locationType,
+      jobType: widget.jobType,
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const _SearchResultsView();
+    return _SearchResultsView(searchMode: widget.searchMode);
   }
 }
 
 class _SearchResultsView extends StatefulWidget {
-  const _SearchResultsView();
+  final SearchMode searchMode;
+
+  const _SearchResultsView({required this.searchMode});
 
   @override
   State<_SearchResultsView> createState() => _SearchResultsViewState();
 }
 
 class _SearchResultsViewState extends State<_SearchResultsView> {
-  SearchMode _searchMode = SearchMode.jobs;
+  late SearchMode _searchMode;
 
-  // Hardcoded demo data for Figma design
-  static final List<Map<String, dynamic>> _demoJobs = [
-    {
-      'title': 'Ui/Ux Designer',
-      'company': 'Top Max Technology',
-      'location': 'Al Muteena, Dubai',
-      'salary': 'From AED 15000 / month',
-      'jobType': 'Full Time',
-      'locationType': 'On-site',
-      'status': 'New',
-      'activeDate': 'Active 2 days Ago',
-    },
-    {
-      'title': 'Senior Flutter Developer',
-      'company': 'Tech Innovations LLC',
-      'location': 'Business Bay, Dubai',
-      'salary': 'From AED 18000 / month',
-      'jobType': 'Full Time',
-      'locationType': 'Hybrid',
-      'status': 'New',
-      'activeDate': 'Active 1 day Ago',
-    },
-    {
-      'title': 'Product Manager',
-      'company': 'Digital Solutions',
-      'location': 'Dubai Marina, Dubai',
-      'salary': 'From AED 20000 / month',
-      'jobType': 'Full Time',
-      'locationType': 'Remote',
-      'status': '',
-      'activeDate': 'Active 3 days Ago',
-    },
-    {
-      'title': 'Backend Developer',
-      'company': 'Cloud Systems Inc',
-      'location': 'Downtown Dubai',
-      'salary': 'From AED 12000 / month',
-      'jobType': 'Part Time',
-      'locationType': 'Remote',
-      'status': 'New',
-      'activeDate': 'Active 5 days Ago',
-    },
-    {
-      'title': 'iOS Developer',
-      'company': 'Mobile Apps Co',
-      'location': 'Jumeirah, Dubai',
-      'salary': 'From AED 16000 / month',
-      'jobType': 'Full Time',
-      'locationType': 'On-site',
-      'status': '',
-      'activeDate': 'Active 1 week Ago',
-    },
-    {
-      'title': 'DevOps Engineer',
-      'company': 'Infrastructure Solutions',
-      'location': 'Dubai Silicon Oasis',
-      'salary': 'From AED 14000 / month',
-      'jobType': 'Full Time',
-      'locationType': 'Hybrid',
-      'status': 'New',
-      'activeDate': 'Active 4 days Ago',
-    },
-    {
-      'title': 'Frontend Developer',
-      'company': 'Web Solutions Ltd',
-      'location': 'DIFC, Dubai',
-      'salary': 'From AED 13000 / month',
-      'jobType': 'Full Time',
-      'locationType': 'Remote',
-      'status': '',
-      'activeDate': 'Active 6 days Ago',
-    },
-    {
-      'title': 'QA Engineer',
-      'company': 'Quality Systems',
-      'location': 'Al Barsha, Dubai',
-      'salary': 'From AED 11000 / month',
-      'jobType': 'Full Time',
-      'locationType': 'On-site',
-      'status': 'New',
-      'activeDate': 'Active 2 days Ago',
-    },
-  ];
-
-  // ✅ (اختياري) ديمو كورسات عشان لما تختار Courses يتغير المحتوى فعلاً
-  static final List<Map<String, dynamic>> _demoCourses = [
-    {
-      'title': 'UI/UX Fundamentals',
-      'company': 'Top Max Academy',
-      'location': 'Online',
-      'salary': 'Free',
-      'jobType': 'Course',
-      'locationType': 'Remote',
-      'status': 'New',
-      'activeDate': 'Active today',
-    },
-    {
-      'title': 'Flutter Bootcamp (Beginner → Pro)',
-      'company': 'Tech Learning Hub',
-      'location': 'Online',
-      'salary': 'From AED 299 / month',
-      'jobType': 'Course',
-      'locationType': 'Remote',
-      'status': '',
-      'activeDate': 'Active 2 days Ago',
-    },
-    {
-      'title': 'Product Management Essentials',
-      'company': 'Digital Skills',
-      'location': 'Dubai (On-site)',
-      'salary': 'From AED 499 / month',
-      'jobType': 'Course',
-      'locationType': 'On-site',
-      'status': 'New',
-      'activeDate': 'Active 5 days Ago',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _searchMode = widget.searchMode;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final list = _searchMode == SearchMode.jobs ? _demoJobs : _demoCourses;
-
-    return Scaffold(
-      body: Stack(
-        children: [
-          // Background gradient (light blue to white)
-          Positioned.fill(
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.center,
-                  colors: [
-                    Color(0xFFD0E3FF), // Light blue top
-                    Color(0xFFFFFFFF), // White bottom
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          SafeArea(
-            child: Column(
-              children: [
-                const SizedBox(height: 16),
-
-                // Search Bar with back button
-                _buildSearchBar(context),
-
-                const SizedBox(height: 16),
-
-                // Filter chips row
-                _buildFilterChipsRow(),
-
-                const SizedBox(height: 12),
-
-                // White container with rounded top corners
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(36),
-                        topRight: Radius.circular(36),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Results count
-                          Text(
-                            _searchMode == SearchMode.jobs
-                                ? 'Results: 375'
-                                : 'Results: 84',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF9CA3AF),
-                            ),
-                          ),
-
-                          const SizedBox(height: 12),
-
-                          // Cards list
-                          Expanded(
-                            child: ListView.separated(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              itemCount: list.length,
-                              separatorBuilder: (_, __) =>
-                                  const SizedBox(height: 15),
-                              itemBuilder: (context, index) {
-                                final item = list[index];
-                                return _JobCard(job: item);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
+    return BlocBuilder<SearchBloc, SearchState>(
+      builder: (context, state) {
+        return Scaffold(
+          body: Stack(
+            children: [
+              // Background gradient (light blue to white)
+              Positioned.fill(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.center,
+                      colors: [
+                        Color(0xFFD0E3FF), // Light blue top
+                        Color(0xFFFFFFFF), // White bottom
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+
+              SafeArea(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 16),
+
+                    // Search Bar with back button
+                    _buildSearchBar(context),
+
+                    const SizedBox(height: 16),
+
+                    // Filter chips row
+                    _buildFilterChipsRow(),
+
+                    const SizedBox(height: 12),
+
+                    // White container with rounded top corners
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(36),
+                            topRight: Radius.circular(36),
+                          ),
+                        ),
+                        child: _buildResults(context, state),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+          // Bottom Navigation - matching AppShell design
+          bottomNavigationBar: _buildBottomNav(context),
+        );
+      },
+    );
+  }
+
+  Widget _buildResults(BuildContext context, SearchState state) {
+    // Loading state
+    if (state is SearchLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    // Error state
+    if (state is SearchError) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                size: 64,
+                color: Color(0xFFEF4444),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                state.message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF6B7280),
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () {
+                  context.read<SearchBloc>().add(SearchRequested(
+                    state.keyword,
+                    searchMode: state.searchMode ?? _searchMode,
+                    locationType: state.locationType,
+                    jobType: state.jobType,
+                  ));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2563EB),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(28),
+                  ),
+                ),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Loaded state with results
+    if (state is SearchLoaded) {
+      final jobs = state.jobs;
+      print('\n📋 _buildResults: SearchLoaded state');
+      print('   - jobs.length: ${jobs.length}');
+      print('   - keyword: "${state.keyword}"');
+      print('   - savedJobIds: ${state.savedJobIds}');
+
+      if (jobs.isEmpty) {
+        return const Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.search_off,
+                size: 64,
+                color: Color(0xFF9CA3AF),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'No results found',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF6B7280),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Results count
+            Text(
+              'Results: ${jobs.length}',
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF9CA3AF),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            // Cards list
+            Expanded(
+              child: ListView.separated(
+                padding: const EdgeInsets.only(bottom: 16),
+                itemCount: jobs.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 15),
+                itemBuilder: (context, index) {
+                  final job = jobs[index];
+                  final isSaved = state.savedJobIds.contains(job.id);
+                  print('   📌 Building card #$index for job #${job.id}: "${job.jobTitle}"');
+                  return _JobCard(
+                    job: job,
+                    isSaved: isSaved,
+                    onToggleSave: () {
+                      context.read<SearchBloc>().add(SearchToggleSaveJob(job.id));
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Initial state - empty
+    return const Center(
+      child: Text(
+        'Start searching...',
+        style: TextStyle(
+          fontSize: 16,
+          color: Color(0xFF6B7280),
+        ),
       ),
-      // Bottom Navigation - matching AppShell design
-      bottomNavigationBar: _buildBottomNav(context),
     );
   }
 
@@ -267,14 +295,22 @@ class _SearchResultsViewState extends State<_SearchResultsView> {
             ),
             const SizedBox(width: 12),
 
-            const Expanded(
-              child: Text(
-                'Ui Ux Design',
-                style: TextStyle(
-                  color: Color(0xFF111827),
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                ),
+            Expanded(
+              child: Builder(
+                builder: (context) {
+                  final blocState = context.watch<SearchBloc>().state;
+                  final displayText = blocState is SearchLoaded
+                      ? blocState.keyword
+                      : (blocState is SearchError ? blocState.keyword : '');
+                  return Text(
+                    displayText.isEmpty ? 'Search' : displayText,
+                    style: const TextStyle(
+                      color: Color(0xFF111827),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  );
+                },
               ),
             ),
 
@@ -535,22 +571,33 @@ class _FilterChip extends StatelessWidget {
 }
 
 /// Job card widget matching Figma design exactly
-class _JobCard extends StatefulWidget {
-  final Map<String, dynamic> job;
+class _JobCard extends StatelessWidget {
+  final JobModel job;
+  final bool isSaved;
+  final VoidCallback onToggleSave;
 
-  const _JobCard({required this.job});
-
-  @override
-  State<_JobCard> createState() => _JobCardState();
-}
-
-class _JobCardState extends State<_JobCard> {
-  bool isSaved = false;
+  const _JobCard({
+    required this.job,
+    required this.isSaved,
+    required this.onToggleSave,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final job = widget.job;
-    final hasNewBadge = job['status'] == 'New';
+    // 🔍 DEBUG: Print all job field values
+    print('\n📱 _JobCard rendering job #${job.id}:');
+    print('   jobTitle: "${job.jobTitle}"');
+    print('   companyName: ${job.companyName != null ? "\"${job.companyName}\"" : "NULL"}');
+    print('   officeLocation: ${job.officeLocation != null ? "\"${job.officeLocation}\"" : "NULL"}');
+    print('   formattedSalary: ${job.formattedSalary != null ? "\"${job.formattedSalary}\"" : "NULL"}');
+    print('   salaryDisplayResolved: ${job.salaryDisplayResolved != null ? "\"${job.salaryDisplayResolved}\"" : "NULL"} ← USED IN UI');
+    print('   jobType: ${job.jobType != null ? "\"${job.jobType}\"" : "NULL"}');
+    print('   locationPriority: ${job.locationPriority != null ? "\"${job.locationPriority}\"" : "NULL"}');
+    print('   status: ${job.status != null ? "\"${job.status}\"" : "NULL"}');
+    print('   activeSince: ${job.activeSince != null ? "\"${job.activeSince}\"" : "NULL"}');
+    print('   isSaved: $isSaved');
+
+    final hasNewBadge = job.status?.toLowerCase() == 'opened' || job.status == 'New';
 
     return Container(
       decoration: BoxDecoration(
@@ -587,11 +634,7 @@ class _JobCardState extends State<_JobCard> {
 
               InkWell(
                 borderRadius: BorderRadius.circular(20),
-                onTap: () {
-                  setState(() {
-                    isSaved = !isSaved;
-                  });
-                },
+                onTap: onToggleSave,
                 child: Icon(
                   isSaved ? Icons.bookmark : Icons.bookmark_border,
                   color: isSaved
@@ -606,7 +649,7 @@ class _JobCardState extends State<_JobCard> {
           const SizedBox(height: 15),
 
           Text(
-            job['title'],
+            job.jobTitle,
             style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w700,
@@ -619,25 +662,27 @@ class _JobCardState extends State<_JobCard> {
 
           const SizedBox(height: 6),
 
-          Text(
-            job['company'],
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF6B7280),
+          if (job.companyName != null)
+            Text(
+              job.companyName!,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF6B7280),
+              ),
             ),
-          ),
 
           const SizedBox(height: 4),
 
-          Text(
-            job['location'],
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
-              color: Color(0xFF9CA3AF),
+          if (job.officeLocation != null)
+            Text(
+              job.officeLocation!,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF9CA3AF),
+              ),
             ),
-          ),
 
           const SizedBox(height: 15),
 
@@ -645,27 +690,45 @@ class _JobCardState extends State<_JobCard> {
             spacing: 8,
             runSpacing: 6,
             children: [
-              _Pill(text: job['salary']),
-              _Pill(text: job['jobType']),
-              _Pill(text: job['locationType']),
+              // Use salaryDisplayResolved which handles all salary logic (formatted, min/max, discussed)
+              if (job.salaryDisplayResolved != null)
+                _Pill(text: job.salaryDisplayResolved!),
+              if (job.jobType != null)
+                _Pill(text: _formatJobType(job.jobType!)),
+              if (job.locationPriority != null)
+                _Pill(text: _formatLocationType(job.locationPriority!)),
             ],
           ),
 
           const SizedBox(height: 15),
 
-          Text(
-            job['activeDate'],
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-              color: Color(0xFF9CA3AF),
+          if (job.activeSince != null)
+            Text(
+              job.activeSince!,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF9CA3AF),
+              ),
             ),
-          ),
         ],
       ),
     );
   }
+
+  String _formatJobType(String type) {
+    // Capitalize first letter of each word
+    return type.split('-').map((word) =>
+      word[0].toUpperCase() + word.substring(1)
+    ).join(' ');
+  }
+
+  String _formatLocationType(String type) {
+    // Capitalize first letter
+    return type[0].toUpperCase() + type.substring(1);
+  }
 }
+
 class _Pill extends StatelessWidget {
   final String text;
 

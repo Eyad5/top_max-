@@ -23,6 +23,9 @@ class CourseModel {
   final String? type;
   final String? location;
 
+  // Save state (for bookmarks)
+  final bool isSaved;
+
   const CourseModel({
     required this.id,
     required this.title,
@@ -43,6 +46,7 @@ class CourseModel {
     this.startTime,
     this.type,
     this.location,
+    this.isSaved = false,
   });
 
   factory CourseModel.fromJson(Map<String, dynamic> json) {
@@ -78,6 +82,9 @@ class CourseModel {
       startTime: json['start_time']?.toString(),
       type: json['type']?.toString(),
       location: json['location']?.toString(),
+
+      // Save state
+      isSaved: _asBool(json['is_saved']) ?? false,
     );
   }
 
@@ -101,7 +108,33 @@ class CourseModel {
         'start_time': startTime,
         'type': type,
         'location': location,
+        'is_saved': isSaved,
       };
+
+  CourseModel copyWith({bool? isSaved}) {
+    return CourseModel(
+      id: id,
+      title: title,
+      description: description,
+      featuredImage: featuredImage,
+      courseCategory: courseCategory,
+      price: price,
+      isFree: isFree,
+      level: level,
+      hasCertificate: hasCertificate,
+      availableSeats: availableSeats,
+      companyId: companyId,
+      status: status,
+      totalEnrolled: totalEnrolled,
+      seatsPercentage: seatsPercentage,
+      highlights: highlights,
+      startDate: startDate,
+      startTime: startTime,
+      type: type,
+      location: location,
+      isSaved: isSaved ?? this.isSaved,
+    );
+  }
 
   static int? _asInt(dynamic v) {
     if (v == null) return null;

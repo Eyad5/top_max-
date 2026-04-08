@@ -25,6 +25,8 @@ class SearchLoaded extends SearchState {
   final bool hasMore;
   final bool isLoadingMore;
   final Set<int> savedJobIds;
+  final String? locationType;
+  final String? jobType;
 
   const SearchLoaded({
     required this.jobs,
@@ -34,6 +36,8 @@ class SearchLoaded extends SearchState {
     required this.hasMore,
     this.isLoadingMore = false,
     this.savedJobIds = const {},
+    this.locationType,
+    this.jobType,
   });
 
   SearchLoaded copyWith({
@@ -44,6 +48,8 @@ class SearchLoaded extends SearchState {
     bool? hasMore,
     bool? isLoadingMore,
     Set<int>? savedJobIds,
+    String? locationType,
+    String? jobType,
   }) {
     return SearchLoaded(
       jobs: jobs ?? this.jobs,
@@ -53,19 +59,30 @@ class SearchLoaded extends SearchState {
       hasMore: hasMore ?? this.hasMore,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       savedJobIds: savedJobIds ?? this.savedJobIds,
+      locationType: locationType ?? this.locationType,
+      jobType: jobType ?? this.jobType,
     );
   }
 
   @override
-  List<Object?> get props => [jobs, keyword, searchMode, currentPage, hasMore, isLoadingMore, savedJobIds];
+  List<Object?> get props => [jobs, keyword, searchMode, currentPage, hasMore, isLoadingMore, savedJobIds, locationType, jobType];
 }
 
 class SearchError extends SearchState {
   final String message;
   final String keyword;
+  final SearchMode? searchMode;
+  final String? locationType;
+  final String? jobType;
 
-  const SearchError({required this.message, required this.keyword});
+  const SearchError({
+    required this.message,
+    required this.keyword,
+    this.searchMode,
+    this.locationType,
+    this.jobType,
+  });
 
   @override
-  List<Object?> get props => [message, keyword];
+  List<Object?> get props => [message, keyword, searchMode, locationType, jobType];
 }

@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/network/dio_client.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
+import '../bloc/search_bloc.dart';
+import '../bloc/search_event.dart';
+import '../data/home_api.dart';
+import '../data/home_repo.dart';
 import '../models/job_model.dart';
 import '../models/course_model.dart';
 import '../models/home_model.dart';
+import 'search_results_page.dart';
 
 class HomePage extends StatelessWidget {
   final VoidCallback onTapSearch;
@@ -175,6 +181,30 @@ class _HomeContent extends StatelessWidget {
     required this.onRefresh,
   });
 
+  /// Navigate to SearchResultsPage using the same pattern as SearchPage._goSearch
+  void _goToSearch(BuildContext context, String keyword, {String? locationType, String? jobType}) {
+    print('🏠 HOME NAV → Search: keyword="$keyword" locationType=$locationType jobType=$jobType');
+    final homeRepo = HomeRepo(HomeApi(DioClient.dio));
+    final searchBloc = SearchBloc(homeRepo);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: searchBloc,
+          child: SearchResultsPage(
+            keyword: keyword,
+            searchMode: SearchMode.jobs,
+            locationType: locationType,
+            jobType: jobType,
+          ),
+        ),
+      ),
+    ).then((_) {
+      searchBloc.close();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
@@ -226,9 +256,21 @@ class _HomeContent extends StatelessWidget {
                   children: [
                     // Jobs for Special Abilities
                     if (data.disabilityJobs.isNotEmpty) ...[
-                      const _SectionHeader(title: 'Jobs for Special Abilities'),
+                      _SectionHeader(
+                        title: 'Jobs for Special Abilities',
+                        onSeeMore: () {
+                          print('🏠 HOME TAP: Special Abilities > See More');
+                          _goToSearch(context, 'disability');
+                        },
+                      ),
                       const SizedBox(height: 12),
-                      const _ChipsRow(labels: ['All', 'Deaf', 'Blind']),
+                      _ChipsRow(
+                        labels: const ['All', 'Deaf', 'Blind'],
+                        onChipTap: (label) {
+                          print('🏠 HOME TAP: Special Abilities > $label');
+                          _goToSearch(context, label.toLowerCase());
+                        },
+                      ),
                       const SizedBox(height: 14),
                       _HorizontalCards<JobModel>(
                         height: 348,
@@ -242,7 +284,13 @@ class _HomeContent extends StatelessWidget {
 
                     // Featured Jobs
                     if (data.featuredJobs.isNotEmpty) ...[
-                      const _SectionHeader(title: 'Featured Jobs'),
+                      _SectionHeader(
+                        title: 'Featured Jobs',
+                        onSeeMore: () {
+                          print('🏠 HOME TAP: Featured Jobs > See More');
+                          _goToSearch(context, 'featured');
+                        },
+                      ),
                       const SizedBox(height: 14),
                       _HorizontalCards<JobModel>(
                         height: 348,
@@ -256,7 +304,13 @@ class _HomeContent extends StatelessWidget {
 
                     // Courses for You
                     if (data.coursesForYou.isNotEmpty) ...[
-                      const _SectionHeader(title: 'Courses for You'),
+                      _SectionHeader(
+                        title: 'Courses for You',
+                        onSeeMore: () {
+                          print('🏠 HOME TAP: Courses for You > See More');
+                          _goToSearch(context, 'courses');
+                        },
+                      ),
                       const SizedBox(height: 14),
                       _HorizontalCards<CourseModel>(
                         height: 220,
@@ -270,10 +324,31 @@ class _HomeContent extends StatelessWidget {
 
                     // Recent Openings
                     if (data.recentOpenings.isNotEmpty) ...[
-                      const _SectionHeader(title: 'Recent Openings'),
+                      _SectionHeader(
+                        title: 'Recent Openings',
+                        onSeeMore: () {
+                          print('🏠 HOME TAP: Recent Openings > See More');
+                          _goToSearch(context, 'jobs');
+                        },
+                      ),
                       const SizedBox(height: 12),
-                      const _ChipsRow(
-                        labels: ['All', 'Full Time', 'Part Time', 'On site', 'Hybrid'],
+                      _ChipsRow(
+                        labels: const ['All', 'Full Time', 'Part Time', 'On site', 'Hybrid'],
+                        onChipTap: (label) {
+                          // Map display labels to proper API filter params
+                          const jobTypeMapping = {
+                            'Full Time': 'full-time',
+                            'Part Time': 'part-time',
+                          };
+                          const locationTypeMapping = {
+                            'On site': 'onsite',
+                            'Hybrid': 'hybrid',
+                          };
+                          final jt = jobTypeMapping[label];
+                          final lt = locationTypeMapping[label];
+                          print('🏠 HOME TAP: Recent Openings > $label → jobType=$jt locationType=$lt');
+                          _goToSearch(context, '', jobType: jt, locationType: lt);
+                        },
                       ),
                       const SizedBox(height: 14),
                       ListView.separated(
@@ -451,7 +526,8 @@ class _SearchBar extends StatelessWidget {
 
 class _SectionHeader extends StatelessWidget {
   final String title;
-  const _SectionHeader({required this.title});
+  final VoidCallback? onSeeMore;
+  const _SectionHeader({required this.title, this.onSeeMore});
 
   @override
   Widget build(BuildContext context) {
@@ -467,12 +543,15 @@ class _SectionHeader extends StatelessWidget {
             ),
           ),
         ),
-        const Text(
-          'See More',
-          style: TextStyle(
-            color: Color(0xFF2563EB),
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
+        GestureDetector(
+          onTap: onSeeMore,
+          child: const Text(
+            'See More',
+            style: TextStyle(
+              color: Color(0xFF2563EB),
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
           ),
         ),
       ],
@@ -482,7 +561,9 @@ class _SectionHeader extends StatelessWidget {
 
 class _ChipsRow extends StatelessWidget {
   final List<String> labels;
-  const _ChipsRow({required this.labels});
+  /// Called when a non-"All" chip is tapped, with the chip label.
+  final void Function(String label)? onChipTap;
+  const _ChipsRow({required this.labels, this.onChipTap});
 
   @override
   Widget build(BuildContext context) {
@@ -491,37 +572,45 @@ class _ChipsRow extends StatelessWidget {
       child: Row(
         children: List.generate(labels.length, (i) {
           final selected = i == 0;
-          return Padding(
-            padding: EdgeInsets.only(right: i == labels.length - 1 ? 0 : 10),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-              decoration: BoxDecoration(
-                color: selected ? const Color(0xFF2563EB) : Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color:
-                      selected ? const Color(0xFF2563EB) : const Color(0xFFE5E7EB),
-                  width: 1.5,
-                ),
-                boxShadow: selected
-                    ? []
-                    : [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.03),
-                          blurRadius: 4,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
+          final chip = Container(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+            decoration: BoxDecoration(
+              color: selected ? const Color(0xFF2563EB) : Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color:
+                    selected ? const Color(0xFF2563EB) : const Color(0xFFE5E7EB),
+                width: 1.5,
               ),
-              child: Text(
-                labels[i],
-                style: TextStyle(
-                  color: selected ? Colors.white : const Color(0xFF374151),
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
+              boxShadow: selected
+                  ? []
+                  : [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 4,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+            ),
+            child: Text(
+              labels[i],
+              style: TextStyle(
+                color: selected ? Colors.white : const Color(0xFF374151),
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
               ),
             ),
+          );
+
+          // "All" (index 0) stays untouched; others get onChipTap
+          return Padding(
+            padding: EdgeInsets.only(right: i == labels.length - 1 ? 0 : 10),
+            child: (i > 0 && onChipTap != null)
+                ? GestureDetector(
+                    onTap: () => onChipTap!(labels[i]),
+                    child: chip,
+                  )
+                : chip,
           );
         }),
       ),
@@ -624,6 +713,12 @@ class _SpecialJobCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 🏠 DEBUG: Home page card rendering
+    print('\n🏠 Home _SpecialJobCard job #${job.id}:');
+    print('   salaryDisplayResolved: ${job.salaryDisplayResolved} ← USED IN UI');
+    print('   formattedSalary: ${job.formattedSalary}');
+    print('   minSalary: ${job.minSalary}, maxSalary: ${job.maxSalary}');
+
     final bgColor = _colors[index % _colors.length];
     final badges = _getBadgesForJob(job, index);
 
@@ -714,7 +809,9 @@ class _SpecialJobCard extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              _TagPill(text: job.salaryDisplayForUi),
+              // ✅ UNIFIED: Use salaryDisplayResolved (shows real data or null, no demo fallbacks)
+              if (job.salaryDisplayResolved != null)
+                _TagPill(text: job.salaryDisplayResolved!),
               if (job.locationPriority != null && job.locationPriority!.isNotEmpty)
                 _TagPill(text: job.locationPriority!),
             ],
@@ -932,25 +1029,28 @@ class _FeaturedJobCard extends StatelessWidget {
                 alignment: Alignment.bottomCenter,
                 child: Row(
                   children: [
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                        ),
-                        child: Text(
-                          job.salaryDisplayForUi,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: Color(0xFF111827),
+                    // ✅ FIXED: Only show salary container if salaryDisplayResolved is not null
+                    // Do NOT render empty pill/container when salary data is missing
+                    if (job.salaryDisplayResolved != null)
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                          ),
+                          child: Text(
+                            job.salaryDisplayResolved!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                              color: Color(0xFF111827),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
+                    if (job.salaryDisplayResolved != null) const SizedBox(width: 12),
                     Container(
                       padding:
                           const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
@@ -1151,22 +1251,23 @@ class _RecentOpeningCard extends StatelessWidget {
             runSpacing: 10,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.95),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFE5E7EB), width: 1.2),
-                ),
-                child: Text(
-                  job.salaryDisplayForUi,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13,
-                    color: Color(0xFF111827),
+              if (job.salaryDisplayResolved != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.95),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFFE5E7EB), width: 1.2),
+                  ),
+                  child: Text(
+                    job.salaryDisplayResolved!,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      color: Color(0xFF111827),
+                    ),
                   ),
                 ),
-              ),
               if (job.jobType != null && job.jobType!.isNotEmpty)
                 _SmallTagPill(text: job.jobType!),
               if (job.locationPriority != null && job.locationPriority!.isNotEmpty)

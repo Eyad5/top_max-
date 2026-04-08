@@ -12,11 +12,18 @@ abstract class SearchEvent extends Equatable {
 class SearchRequested extends SearchEvent {
   final String keyword;
   final SearchMode searchMode;
+  final String? locationType;
+  final String? jobType;
 
-  const SearchRequested(this.keyword, {this.searchMode = SearchMode.jobs});
+  const SearchRequested(
+    this.keyword, {
+    this.searchMode = SearchMode.jobs,
+    this.locationType,
+    this.jobType,
+  });
 
   @override
-  List<Object?> get props => [keyword, searchMode];
+  List<Object?> get props => [keyword, searchMode, locationType, jobType];
 }
 
 class SearchNextPageRequested extends SearchEvent {

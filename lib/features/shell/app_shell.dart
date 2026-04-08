@@ -7,6 +7,8 @@ import '../auth/data/auth_repo.dart';
 import '../auth/ui/auth_gate.dart';
 import '../home/bloc/home_bloc.dart';
 import '../home/bloc/home_event.dart';
+import '../home/bloc/saved_items_bloc.dart';
+import '../home/bloc/saved_items_event.dart';
 import '../home/data/home_api.dart';
 import '../home/data/home_repo.dart';
 import '../home/ui/home_page.dart';
@@ -25,15 +27,24 @@ class _AppShellState extends State<AppShell> {
   int _previousIndex = 0;
 
   late final HomeRepo _homeRepo;
+  late final HomeBloc _homeBloc;
   final GlobalKey<_SavedItemsPageWrapperState> _savedItemsKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     _homeRepo = HomeRepo(HomeApi(DioClient.dio));
+    _homeBloc = HomeBloc(_homeRepo)..add(const HomeLoadRequested());
+  }
+
+  @override
+  void dispose() {
+    _homeBloc.close();
+    super.dispose();
   }
 
   void _onTabChanged(int newIndex) {
+    print('\n🔄 TAB SWITCH: $_previousIndex → $newIndex');
     setState(() {
       _previousIndex = _index;
       _index = newIndex;
@@ -41,15 +52,25 @@ class _AppShellState extends State<AppShell> {
 
     // Refresh SavedItems when navigating to it
     if (newIndex == 3 && _previousIndex != 3) {
+      print('   → Triggering SavedItems refresh (jobs + courses)');
       Future.delayed(const Duration(milliseconds: 300), () {
         _savedItemsKey.currentState?.refresh();
       });
     }
+
+    // ❌ REMOVED: Refresh Home when navigating back from SavedItems
+    // Reason: Home already has correct save state from optimistic updates
+    // This was causing excessive /mobile/home API calls + salary hydration (21+ requests)
+    // if (newIndex == 0 && _previousIndex == 3) {
+    //   Future.delayed(const Duration(milliseconds: 100), () {
+    //     _homeBloc.add(const HomeRefreshRequested());
+    //   });
+    // }
   }
 
   late final List<Widget> _tabs = [
-    BlocProvider(
-      create: (_) => HomeBloc(_homeRepo)..add(const HomeLoadRequested()),
+    BlocProvider.value(
+      value: _homeBloc,
       child: HomePage(
         onTapSearch: () => _onTabChanged(1),
       ),
@@ -505,44 +526,36 @@ class _SavedItemsPageWrapper extends StatefulWidget {
 }
 
 class _SavedItemsPageWrapperState extends State<_SavedItemsPageWrapper> {
-  final GlobalKey<_SavedItemsPageInternalState> _pageKey = GlobalKey();
+  late final SavedItemsBloc _savedItemsBloc;
+  late final HomeRepo _homeRepo;
+
+  @override
+  void initState() {
+    super.initState();
+    _homeRepo = HomeRepo(HomeApi(DioClient.dio));
+    _savedItemsBloc = SavedItemsBloc(_homeRepo);
+  }
 
   void refresh() {
-    _pageKey.currentState?.refresh();
+    print('📋 SavedItems refresh() called - loading jobs and courses');
+    // Reload both jobs and courses when navigating back to this tab
+    _savedItemsBloc.add(const SavedItemsLoadRequested('jobs'));
+    _savedItemsBloc.add(const SavedItemsLoadRequested('courses'));
+  }
+
+  @override
+  void dispose() {
+    _savedItemsBloc.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return _SavedItemsPageInternal(
-      key: _pageKey,
-      onBackToHome: widget.onBackToHome,
-    );
-  }
-}
-
-class _SavedItemsPageInternal extends StatefulWidget {
-  final VoidCallback? onBackToHome;
-
-  const _SavedItemsPageInternal({super.key, this.onBackToHome});
-
-  @override
-  State<_SavedItemsPageInternal> createState() => _SavedItemsPageInternalState();
-}
-
-class _SavedItemsPageInternalState extends State<_SavedItemsPageInternal> {
-  int _refreshKey = 0;
-
-  void refresh() {
-    setState(() {
-      _refreshKey++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SavedItemsPage(
-      key: ValueKey(_refreshKey),
-      onBackToHome: widget.onBackToHome,
+    return BlocProvider.value(
+      value: _savedItemsBloc,
+      child: SavedItemsPage(
+        onBackToHome: widget.onBackToHome,
+      ),
     );
   }
 }
